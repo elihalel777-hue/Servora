@@ -1,108 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Servora Dashboard</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #0f172a;
-            color: white;
-        }
+<meta charset="UTF-8">
+<title>Servora Dashboard</title>
 
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            background: #020617;
-            position: fixed;
-            padding: 25px;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
 
-        .sidebar h2 {
-            color: #60a5fa;
-        }
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    position: fixed;
+    padding: 25px;
+}
 
-        .sidebar a {
-            display: block;
-            color: #cbd5e1;
-            text-decoration: none;
-            margin: 20px 0;
-        }
+.sidebar h2 {
+    color: #60a5fa;
+}
 
-        .main {
-            margin-left: 270px;
-            padding: 30px;
-        }
+.sidebar a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin: 18px 0;
+}
 
-        .btn {
-            padding: 14px 22px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 25px;
-        }
+.main {
+    margin-left: 270px;
+    padding: 30px;
+}
 
-        .btn:hover {
-            background: #2563eb;
-        }
+.btn {
+    padding: 14px 22px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
 
-        .cards {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+.cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
 
-        .card {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            width: 240px;
-            margin-bottom: 20px;
-        }
+.card,
+.request-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+}
 
-        .request-card {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 700px;
-            margin-bottom: 20px;
-        }
+.card {
+    width: 220px;
+}
 
-        .alert {
-            color: #facc15;
-        }
+.request-card {
+    max-width: 760px;
+    margin-bottom: 20px;
+}
 
-        .success {
-            color: #22c55e;
-        }
+small {
+    color: #94a3b8;
+}
 
-        .danger {
-            color: #ef4444;
-        }
-
-        small {
-            color: #94a3b8;
-        }
-    </style>
+.label {
+    color: #60a5fa;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
 <div class="sidebar">
     <h2>SERVORA</h2>
     <a href="dashboard.html">Dashboard</a>
     <a href="request.html">New Request</a>
-    <a href="#">Work Orders</a>
-    <a href="#">Technicians</a>
-    <a href="#">Properties</a>
-    <a href="index.html">Logout</a>
+    <a href="index.html">Home</a>
 </div>
 
 <div class="main">
     <h1>Maintenance Dashboard</h1>
-    <p>AI-powered overview of your property maintenance operations.</p>
+    <p>AI-powered overview of your maintenance operations.</p>
 
     <button class="btn" onclick="window.location.href='request.html'">
         + New Maintenance Request
@@ -111,79 +99,54 @@
     <div class="cards">
         <div class="card">
             <h3>Open Requests</h3>
-            <h1 id="openRequests">24</h1>
-            <p class="alert">Includes submitted requests</p>
-        </div>
-
-        <div class="card">
-            <h3>Work Orders</h3>
-            <h1>18</h1>
-            <p class="success">12 in progress</p>
-        </div>
-
-        <div class="card">
-            <h3>Technicians</h3>
-            <h1>7</h1>
-            <p class="success">5 available</p>
+            <h1 id="openCount">0</h1>
         </div>
 
         <div class="card">
             <h3>AI Alerts</h3>
-            <h1 id="aiAlerts">3</h1>
-            <p class="danger">Needs attention</p>
+            <h1 id="alertCount">0</h1>
         </div>
     </div>
 
-    <h2>AI Priority Alerts</h2>
-
-    <div class="card">
-        <h3 class="danger">Emergency Leak</h3>
-        <p>Unit 204 reported water leaking under the sink. AI marked this as urgent.</p>
-    </div>
-
-    <div class="card">
-        <h3 class="alert">HVAC Issue</h3>
-        <p>Unit 118 AC is not cooling. AI recommends assigning an HVAC technician.</p>
-    </div>
-
-    <div class="card">
-        <h3 class="success">Completed Work</h3>
-        <p>Unit 305 garbage disposal repair was completed today.</p>
-    </div>
-
     <h2>Recent Requests</h2>
-
-    <div id="recentRequests"></div>
+    <div id="recent"></div>
 </div>
 
 <script>
-    let requests = JSON.parse(localStorage.getItem("requests")) || [];
+const requests = JSON.parse(localStorage.getItem("requests")) || [];
 
-    let recentRequests = document.getElementById("recentRequests");
+document.getElementById("openCount").textContent = requests.length;
 
-    if (requests.length === 0) {
-        recentRequests.innerHTML = "<p>No new requests submitted yet.</p>";
-    } else {
-        requests.forEach(function(req) {
-            recentRequests.innerHTML += `
-                <div class="request-card">
-                    <h3>${req.category} - ${req.priority}</h3>
-                    <p><strong>Property:</strong> ${req.property}</p>
-                    <p><strong>Unit:</strong> ${req.unit}</p>
-                    <p><strong>Description:</strong> ${req.description}</p>
-                    <p><small>Submitted: ${req.date}</small></p>
-                </div>
-            `;
-        });
-    }
+document.getElementById("alertCount").textContent =
+    requests.filter(r => r.priority === "High" || r.priority === "Emergency").length;
 
-    document.getElementById("openRequests").innerText = 24 + requests.length;
+const recent = document.getElementById("recent");
 
-    let urgentCount = requests.filter(function(req) {
-        return req.priority === "High" || req.priority === "Emergency";
-    }).length;
+if (requests.length === 0) {
+    recent.innerHTML = "<p>No requests submitted yet.</p>";
+} else {
+    requests.slice().reverse().forEach(r => {
+        recent.innerHTML += `
+            <div class="request-card">
+                <h3>${r.category} - ${r.priority}</h3>
 
-    document.getElementById("aiAlerts").innerText = 3 + urgentCount;
+                <p><span class="label">Property:</span> ${r.property}</p>
+                <p><span class="label">Unit:</span> ${r.unit}</p>
+                <p><span class="label">Description:</span> ${r.description}</p>
+
+                <hr>
+
+                <h3>AI Analysis</h3>
+
+                <p><span class="label">Recommended Technician:</span> ${r.technician}</p>
+                <p><span class="label">Estimated Response:</span> ${r.responseTime}</p>
+                <p><span class="label">Suggested Work Order:</span> ${r.suggestedWorkOrder}</p>
+
+                <small>Submitted: ${r.date}</small>
+            </div>
+        `;
+    });
+}
 </script>
 
 </body>
