@@ -13,7 +13,7 @@ body {
 }
 
 .container {
-    max-width: 700px;
+    max-width: 750px;
     margin: 50px auto;
     background: #111827;
     padding: 40px;
@@ -28,7 +28,6 @@ p {
     color: #cbd5e1;
 }
 
-input,
 select,
 textarea {
     width: 100%;
@@ -68,13 +67,19 @@ a {
 
 <div class="container">
     <h1>New Maintenance Request</h1>
-    <p>Select a property, describe the issue, and Servora AI will analyze it automatically.</p>
+    <p>Select the property, building, and unit. Servora AI will analyze the issue automatically.</p>
 
-    <select id="property">
+    <select id="property" onchange="loadBuildings()">
         <option value="">Select Property</option>
     </select>
 
-    <input id="unit" type="text" placeholder="Unit Number">
+    <select id="building" onchange="loadUnits()">
+        <option value="">Select Building</option>
+    </select>
+
+    <select id="unit">
+        <option value="">Select Unit</option>
+    </select>
 
     <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
 
@@ -87,7 +92,12 @@ a {
 
 <script>
 let properties = JSON.parse(localStorage.getItem("properties")) || [];
+let buildings = JSON.parse(localStorage.getItem("buildings")) || [];
+let units = JSON.parse(localStorage.getItem("units")) || [];
+
 let propertyDropdown = document.getElementById("property");
+let buildingDropdown = document.getElementById("building");
+let unitDropdown = document.getElementById("unit");
 
 properties.forEach(function(property) {
     let option = document.createElement("option");
@@ -95,6 +105,38 @@ properties.forEach(function(property) {
     option.textContent = property.name;
     propertyDropdown.appendChild(option);
 });
+
+function loadBuildings() {
+    let selectedProperty = propertyDropdown.value;
+
+    buildingDropdown.innerHTML = '<option value="">Select Building</option>';
+    unitDropdown.innerHTML = '<option value="">Select Unit</option>';
+
+    buildings
+        .filter(building => building.property === selectedProperty)
+        .forEach(function(building) {
+            let option = document.createElement("option");
+            option.value = building.name;
+            option.textContent = building.name;
+            buildingDropdown.appendChild(option);
+        });
+}
+
+function loadUnits() {
+    let selectedProperty = propertyDropdown.value;
+    let selectedBuilding = buildingDropdown.value;
+
+    unitDropdown.innerHTML = '<option value="">Select Unit</option>';
+
+    units
+        .filter(unit => unit.property === selectedProperty && unit.building === selectedBuilding)
+        .forEach(function(unit) {
+            let option = document.createElement("option");
+            option.value = unit.unit;
+            option.textContent = unit.unit;
+            unitDropdown.appendChild(option);
+        });
+}
 
 function analyzeRequest(description) {
     let text = description.toLowerCase();
@@ -138,13 +180,14 @@ function analyzeRequest(description) {
         text.includes("outlet") ||
         text.includes("power") ||
         text.includes("sparking") ||
-        text.includes("breaker")
+        text.includes("breaker") ||
+        text.includes("smoke")
     ) {
         category = "Electrical";
         priority = "Emergency";
         technician = "Electrician";
         responseTime = "Immediate";
-        suggestedWorkOrder = "Inspect electrical system immediately and secure the area.";
+        suggestedWorkOrder = "Inspect electrical system immediately, secure the area, and shut off power if needed.";
     }
 
     if (
@@ -171,8 +214,9 @@ function analyzeRequest(description) {
 }
 
 function submitRequest() {
-    let selectedProperty = document.getElementById("property").value;
-    let unit = document.getElementById("unit").value;
+    let selectedProperty = propertyDropdown.value;
+    let selectedBuilding = buildingDropdown.value;
+    let selectedUnit = unitDropdown.value;
     let description = document.getElementById("description").value;
 
     if (selectedProperty === "") {
@@ -180,8 +224,13 @@ function submitRequest() {
         return;
     }
 
-    if (unit === "") {
-        alert("Please enter a unit number.");
+    if (selectedBuilding === "") {
+        alert("Please select a building.");
+        return;
+    }
+
+    if (selectedUnit === "") {
+        alert("Please select a unit.");
         return;
     }
 
@@ -194,7 +243,8 @@ function submitRequest() {
 
     let request = {
         property: selectedProperty,
-        unit: unit,
+        building: selectedBuilding,
+        unit: selectedUnit,
         description: description,
         category: ai.category,
         priority: ai.priority,
@@ -205,13 +255,10 @@ function submitRequest() {
     };
 
     let requests = JSON.parse(localStorage.getItem("requests")) || [];
-
     requests.push(request);
-
     localStorage.setItem("requests", JSON.stringify(requests));
 
     alert("Request submitted! Servora AI analyzed the issue.");
-
     window.location.href = "dashboard.html";
 }
 </script>
