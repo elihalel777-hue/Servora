@@ -84,7 +84,7 @@ input {
 
 <div class="main">
     <h1>Properties</h1>
-    <p>Add and manage properties for your maintenance operations.</p>
+    <p>Add and manage properties using the Servora backend.</p>
 
     <h2>Add Property</h2>
 
@@ -99,10 +99,13 @@ input {
 </div>
 
 <script>
-let properties = JSON.parse(localStorage.getItem("properties")) || [];
-const propertyList = document.getElementById("propertyList");
+const API_URL = "http://localhost:3000";
 
-function displayProperties() {
+async function loadProperties() {
+    const response = await fetch(API_URL + "/properties");
+    const properties = await response.json();
+
+    const propertyList = document.getElementById("propertyList");
     propertyList.innerHTML = "";
 
     if (properties.length === 0) {
@@ -110,42 +113,45 @@ function displayProperties() {
         return;
     }
 
-    properties.forEach((property, index) => {
+    properties.forEach(function(property) {
         propertyList.innerHTML += `
             <div class="property-card">
                 <h3>${property.name}</h3>
                 <p><span class="label">Address:</span> ${property.address}</p>
                 <p><span class="label">Units:</span> ${property.units}</p>
-                <button class="btn" onclick="deleteProperty(${index})">Delete</button>
             </div>
         `;
     });
 }
 
-function addProperty() {
-    let property = {
+async function addProperty() {
+    const property = {
         name: document.getElementById("propertyName").value,
         address: document.getElementById("propertyAddress").value,
         units: document.getElementById("propertyUnits").value
     };
 
-    properties.push(property);
-    localStorage.setItem("properties", JSON.stringify(properties));
+    if (property.name === "" || property.address === "" || property.units === "") {
+        alert("Please fill out all fields.");
+        return;
+    }
+
+    await fetch(API_URL + "/properties", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(property)
+    });
 
     document.getElementById("propertyName").value = "";
     document.getElementById("propertyAddress").value = "";
     document.getElementById("propertyUnits").value = "";
 
-    displayProperties();
+    loadProperties();
 }
 
-function deleteProperty(index) {
-    properties.splice(index, 1);
-    localStorage.setItem("properties", JSON.stringify(properties));
-    displayProperties();
-}
-
-displayProperties();
+loadProperties();
 </script>
 
 </body>
