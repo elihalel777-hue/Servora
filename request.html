@@ -5,245 +5,324 @@
 <title>New Maintenance Request - Servora</title>
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
 }
 
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #020617;
-    position: fixed;
-    padding: 25px;
+.sidebar{
+width:220px;
+height:100vh;
+position:fixed;
+background:#020617;
+padding:25px;
 }
 
-.sidebar h2 {
-    color: #60a5fa;
+.sidebar h2{
+color:#60a5fa;
 }
 
-.sidebar a {
-    display: block;
-    color: #cbd5e1;
-    text-decoration: none;
-    margin: 18px 0;
+.sidebar a{
+display:block;
+color:#cbd5e1;
+text-decoration:none;
+margin:18px 0;
 }
 
-.main {
-    margin-left: 270px;
-    padding: 30px;
+.main{
+margin-left:270px;
+padding:30px;
 }
 
 select,
 textarea,
-input {
-    width: 100%;
-    max-width: 700px;
-    padding: 14px;
-    margin: 12px 0;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    display: block;
+input{
+width:100%;
+max-width:650px;
+padding:14px;
+margin:12px 0;
+border:none;
+border-radius:8px;
+font-size:16px;
 }
 
-textarea {
-    height: 140px;
+textarea{
+height:160px;
 }
 
-.btn {
-    padding: 14px 22px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+button{
+padding:14px 24px;
+background:#3b82f6;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
 }
 
-.label {
-    color: #60a5fa;
-    font-weight: bold;
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
 }
+
+.label{
+color:#60a5fa;
+font-weight:bold;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h2>SERVORA</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="properties.html">Properties</a>
-    <a href="buildings.html">Buildings</a>
-    <a href="units.html">Units</a>
-    <a href="request.html">New Request</a>
-    <a href="technician.html">Technician Portal</a>
-    <a href="index.html">Home</a>
+
+<h2>SERVORA</h2>
+
+<a href="dashboard.html">Dashboard</a>
+<a href="properties.html">Properties</a>
+<a href="buildings.html">Buildings</a>
+<a href="units.html">Units</a>
+<a href="request.html">Maintenance Request</a>
+<a href="technician.html">Technician Portal</a>
+
 </div>
 
 <div class="main">
-    <h1>New Maintenance Request</h1>
-    <p>Select a property, describe the issue, and Servora AI will analyze it.</p>
 
-    <select id="property">
-        <option value="">Select Property</option>
-    </select>
+<h1>Submit Maintenance Request</h1>
 
-    <input id="unit" type="text" placeholder="Unit Number">
+<p>Select the property, building and unit.</p>
 
-    <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
+<select id="propertySelect">
+<option>Select Property</option>
+</select>
 
-    <input id="photo" type="file" accept="image/*">
+<select id="buildingSelect">
+<option>Select Building</option>
+</select>
 
-    <button class="btn" onclick="submitRequest()">Submit Request</button>
-</div>
+<select id="unitSelect">
+<option>Select Unit</option>
+</select>
+
+<textarea
+id="description"
+placeholder="Describe the maintenance issue..."></textarea>
+
+<input
+type="file"
+id="photo">
+
+<button onclick="submitRequest()">
+
+Submit Request
+
+</button>
+
+<div id="result"></div>
 
 <script>
-const API_URL = "http://localhost:3000";
 
-async function loadProperties() {
-    const response = await fetch(API_URL + "/properties");
-    const properties = await response.json();
+const API_URL="http://localhost:3000";
 
-    const propertyDropdown = document.getElementById("property");
-    propertyDropdown.innerHTML = '<option value="">Select Property</option>';
+let buildings=[];
+let units=[];
 
-    properties.forEach(function(property) {
-        propertyDropdown.innerHTML += `
-            <option value="${property.name}">
-                ${property.name}
-            </option>
-        `;
-    });
+async function loadProperties(){
+
+const response=await fetch(API_URL+"/properties");
+
+const properties=await response.json();
+
+const dropdown=document.getElementById("propertySelect");
+
+dropdown.innerHTML="<option>Select Property</option>";
+
+properties.forEach(property=>{
+
+dropdown.innerHTML+=`
+
+<option value="${property.name}">
+
+${property.name}
+
+</option>
+
+`;
+
+});
+
+}
+async function loadBuildings(){
+
+const response=await fetch(API_URL+"/buildings");
+
+buildings=await response.json();
+
+updateBuildings();
+
 }
 
-function analyzeRequest(description) {
-    let text = description.toLowerCase();
+async function loadUnits(){
 
-    let category = "General Maintenance";
-    let priority = "Medium";
-    let technician = "General Technician";
-    let responseTime = "24 hours";
-    let suggestedWorkOrder = "Review the issue and assign the proper technician.";
+const response=await fetch(API_URL+"/units");
 
-    if (
-        text.includes("leak") ||
-        text.includes("water") ||
-        text.includes("pipe") ||
-        text.includes("sink") ||
-        text.includes("toilet")
-    ) {
-        category = "Plumbing";
-        priority = "High";
-        technician = "Plumber";
-        responseTime = "2 hours";
-        suggestedWorkOrder = "Inspect plumbing lines, shut off water if needed, and repair leak source.";
-    }
+units=await response.json();
 
-    if (
-        text.includes("ac") ||
-        text.includes("air conditioner") ||
-        text.includes("hvac") ||
-        text.includes("cooling") ||
-        text.includes("heat")
-    ) {
-        category = "HVAC";
-        priority = "High";
-        technician = "HVAC Technician";
-        responseTime = "4 hours";
-        suggestedWorkOrder = "Inspect HVAC system, thermostat, compressor, and airflow.";
-    }
-
-    if (
-        text.includes("electric") ||
-        text.includes("outlet") ||
-        text.includes("power") ||
-        text.includes("sparking") ||
-        text.includes("breaker") ||
-        text.includes("smoke")
-    ) {
-        category = "Electrical";
-        priority = "Emergency";
-        technician = "Electrician";
-        responseTime = "Immediate";
-        suggestedWorkOrder = "Inspect electrical system immediately, secure the area, and shut off power if needed.";
-    }
-
-    if (
-        text.includes("fridge") ||
-        text.includes("refrigerator") ||
-        text.includes("stove") ||
-        text.includes("oven") ||
-        text.includes("dishwasher")
-    ) {
-        category = "Appliance";
-        priority = "Medium";
-        technician = "Appliance Technician";
-        responseTime = "24 hours";
-        suggestedWorkOrder = "Inspect appliance, diagnose failure, and repair or replace faulty parts.";
-    }
-
-    return {
-        category,
-        priority,
-        technician,
-        responseTime,
-        suggestedWorkOrder
-    };
 }
 
-async function submitRequest() {
-    const property = document.getElementById("property").value;
-    const unit = document.getElementById("unit").value;
-    const description = document.getElementById("description").value;
-    const photoInput = document.getElementById("photo");
-    const photoName = photoInput.files.length > 0 ? photoInput.files[0].name : "No photo uploaded";
+function updateBuildings(){
 
-    if (property === "") {
-        alert("Please select a property.");
-        return;
-    }
+const property=document.getElementById("propertySelect").value;
 
-    if (unit === "") {
-        alert("Please enter a unit number.");
-        return;
-    }
+const dropdown=document.getElementById("buildingSelect");
 
-    if (description === "") {
-        alert("Please describe the maintenance issue.");
-        return;
-    }
+dropdown.innerHTML="<option>Select Building</option>";
 
-    const ai = analyzeRequest(description);
+buildings
+.filter(b=>b.property===property)
+.forEach(building=>{
 
-    const request = {
-        property: property,
-        unit: unit,
-        description: description,
-        photoName: photoName,
-        category: ai.category,
-        priority: ai.priority,
-        technician: ai.technician,
-        responseTime: ai.responseTime,
-        suggestedWorkOrder: ai.suggestedWorkOrder,
-        date: new Date().toLocaleString()
-    };
+dropdown.innerHTML+=`
 
-    await fetch(API_URL + "/requests", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(request)
-    });
+<option value="${building.name}">
 
-    alert("Request submitted! Servora AI analyzed the issue.");
-    window.location.href = "dashboard.html";
+${building.name}
+
+</option>
+
+`;
+
+});
+
+updateUnits();
+
+}
+
+function updateUnits(){
+
+const property=document.getElementById("propertySelect").value;
+
+const building=document.getElementById("buildingSelect").value;
+
+const dropdown=document.getElementById("unitSelect");
+
+dropdown.innerHTML="<option>Select Unit</option>";
+
+units
+.filter(u=>u.property===property && u.building===building)
+.forEach(unit=>{
+
+dropdown.innerHTML+=`
+
+<option value="${unit.unit}">
+
+${unit.unit}
+
+</option>
+
+`;
+
+});
+
+}
+
+document.getElementById("propertySelect").addEventListener("change",updateBuildings);
+
+document.getElementById("buildingSelect").addEventListener("change",updateUnits);
+
+function analyzeIssue(text){
+
+text=text.toLowerCase();
+
+if(text.includes("water")||text.includes("leak")||text.includes("pipe")){
+
+return{
+category:"Plumbing",
+priority:"High",
+technician:"Plumber"
+};
+
+}
+
+if(text.includes("ac")||text.includes("air")||text.includes("hvac")){
+
+return{
+category:"HVAC",
+priority:"High",
+technician:"HVAC Technician"
+};
+
+}
+
+if(text.includes("electric")||text.includes("outlet")||text.includes("breaker")){
+
+return{
+category:"Electrical",
+priority:"Emergency",
+technician:"Electrician"
+};
+
+}
+
+return{
+category:"General Maintenance",
+priority:"Medium",
+technician:"Maintenance Technician"
+};
+
+}
+
+async function submitRequest(){
+
+const ai=analyzeIssue(document.getElementById("description").value);
+
+await fetch(API_URL+"/requests",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+property:document.getElementById("propertySelect").value,
+
+building:document.getElementById("buildingSelect").value,
+
+unit:document.getElementById("unitSelect").value,
+
+description:document.getElementById("description").value,
+
+category:ai.category,
+
+priority:ai.priority,
+
+technician:ai.technician
+
+})
+
+});
+
+alert("Maintenance request submitted!");
+
 }
 
 loadProperties();
+loadBuildings();
+loadUnits();
+
 </script>
+
+</div>
 
 </body>
 </html>
