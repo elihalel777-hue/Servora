@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Properties - Servora</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    position: fixed;
+    padding: 25px;
+}
+
+.sidebar h2 {
+    color: #60a5fa;
+}
+
+.sidebar a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin: 18px 0;
+}
+
+.main {
+    margin-left: 270px;
+    padding: 30px;
+}
+
+input {
+    width: 100%;
+    max-width: 500px;
+    padding: 14px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    display: block;
+}
+
+.btn {
+    padding: 14px 22px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.property-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 700px;
+    margin: 20px 0;
+}
+
+.label {
+    color: #60a5fa;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>SERVORA</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="request.html">New Request</a>
+    <a href="technician.html">Technician Portal</a>
+    <a href="properties.html">Properties</a>
+    <a href="index.html">Home</a>
+</div>
+
+<div class="main">
+    <h1>Properties</h1>
+    <p>Add and manage properties for your maintenance operations.</p>
+
+    <h2>Add Property</h2>
+
+    <input id="propertyName" type="text" placeholder="Property Name">
+    <input id="propertyAddress" type="text" placeholder="Property Address">
+    <input id="propertyUnits" type="number" placeholder="Number of Units">
+
+    <button class="btn" onclick="addProperty()">Save Property</button>
+
+    <h2>Saved Properties</h2>
+    <div id="propertyList"></div>
+</div>
+
+<script>
+let properties = JSON.parse(localStorage.getItem("properties")) || [];
+const propertyList = document.getElementById("propertyList");
+
+function displayProperties() {
+    propertyList.innerHTML = "";
+
+    if (properties.length === 0) {
+        propertyList.innerHTML = "<p>No properties added yet.</p>";
+        return;
+    }
+
+    properties.forEach((property, index) => {
+        propertyList.innerHTML += `
+            <div class="property-card">
+                <h3>${property.name}</h3>
+                <p><span class="label">Address:</span> ${property.address}</p>
+                <p><span class="label">Units:</span> ${property.units}</p>
+                <button class="btn" onclick="deleteProperty(${index})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+function addProperty() {
+    let property = {
+        name: document.getElementById("propertyName").value,
+        address: document.getElementById("propertyAddress").value,
+        units: document.getElementById("propertyUnits").value
+    };
+
+    properties.push(property);
+    localStorage.setItem("properties", JSON.stringify(properties));
+
+    document.getElementById("propertyName").value = "";
+    document.getElementById("propertyAddress").value = "";
+    document.getElementById("propertyUnits").value = "";
+
+    displayProperties();
+}
+
+function deleteProperty(index) {
+    properties.splice(index, 1);
+    localStorage.setItem("properties", JSON.stringify(properties));
+    displayProperties();
+}
+
+displayProperties();
+</script>
+
+</body>
+</html>
