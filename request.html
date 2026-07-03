@@ -3,60 +3,14 @@
 <head>
     <title>New Maintenance Request - Servora</title>
     <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #0f172a;
-            color: white;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 50px auto;
-            background: #111827;
-            padding: 40px;
-            border-radius: 15px;
-        }
-
-        h1 {
-            color: #60a5fa;
-        }
-
-        p {
-            color: #cbd5e1;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        textarea {
-            height: 120px;
-        }
-
-        .btn {
-            padding: 15px 25px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 17px;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background: #2563eb;
-        }
-
-        a {
-            color: #60a5fa;
-            text-decoration: none;
-        }
+        body { font-family: Arial; margin: 0; background: #0f172a; color: white; }
+        .container { max-width: 700px; margin: 50px auto; background: #111827; padding: 40px; border-radius: 15px; }
+        h1 { color: #60a5fa; }
+        p { color: #cbd5e1; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 12px 0; border: none; border-radius: 8px; font-size: 16px; }
+        textarea { height: 120px; }
+        .btn { padding: 15px 25px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 17px; cursor: pointer; }
+        a { color: #60a5fa; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -65,10 +19,10 @@
     <h1>New Maintenance Request</h1>
     <p>Submit a maintenance issue for AI review and work order creation.</p>
 
-    <input type="text" placeholder="Property Name">
-    <input type="text" placeholder="Unit Number">
+    <input id="property" type="text" placeholder="Property Name">
+    <input id="unit" type="text" placeholder="Unit Number">
 
-    <select>
+    <select id="category">
         <option>Select Issue Category</option>
         <option>Plumbing</option>
         <option>Electrical</option>
@@ -78,7 +32,7 @@
         <option>Emergency</option>
     </select>
 
-    <select>
+    <select id="priority">
         <option>Select Priority</option>
         <option>Low</option>
         <option>Medium</option>
@@ -86,16 +40,32 @@
         <option>Emergency</option>
     </select>
 
-    <textarea placeholder="Describe the maintenance issue..."></textarea>
+    <textarea id="description" placeholder="Describe the maintenance issue..."></textarea>
 
-    <input type="file">
-
-    <button class="btn" onclick="alert('Request submitted! AI will review this issue.'); window.location.href='dashboard.html';">
-        Submit Request
-    </button>
+    <button class="btn" onclick="submitRequest()">Submit Request</button>
 
     <p><a href="dashboard.html">Back to Dashboard</a></p>
 </div>
+
+<script>
+function submitRequest() {
+    let request = {
+        property: document.getElementById("property").value,
+        unit: document.getElementById("unit").value,
+        category: document.getElementById("category").value,
+        priority: document.getElementById("priority").value,
+        description: document.getElementById("description").value,
+        date: new Date().toLocaleString()
+    };
+
+    let requests = JSON.parse(localStorage.getItem("requests")) || [];
+    requests.push(request);
+    localStorage.setItem("requests", JSON.stringify(requests));
+
+    alert("Request submitted successfully!");
+    window.location.href = "dashboard.html";
+}
+</script>
 
 </body>
 </html>
