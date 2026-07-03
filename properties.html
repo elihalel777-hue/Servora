@@ -15,8 +15,8 @@ body {
 .sidebar {
     width: 220px;
     height: 100vh;
-    background: #020617;
     position: fixed;
+    background: #020617;
     padding: 25px;
 }
 
@@ -38,30 +38,30 @@ body {
 
 input {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     padding: 14px;
-    margin: 10px 0;
+    margin: 12px 0;
     border: none;
     border-radius: 8px;
     font-size: 16px;
-    display: block;
 }
 
-.btn {
-    padding: 14px 22px;
-    background: #3b82f6;
-    color: white;
+button {
+    padding: 14px 24px;
     border: none;
     border-radius: 8px;
+    background: #3b82f6;
+    color: white;
     cursor: pointer;
+    font-size: 16px;
 }
 
-.property-card {
+.card {
     background: #1e293b;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 10px;
+    margin-top: 20px;
     max-width: 700px;
-    margin: 20px 0;
 }
 
 .label {
@@ -76,22 +76,22 @@ input {
 <div class="sidebar">
     <h2>SERVORA</h2>
     <a href="dashboard.html">Dashboard</a>
-    <a href="request.html">New Request</a>
-    <a href="technician.html">Technician Portal</a>
     <a href="properties.html">Properties</a>
-    <a href="index.html">Home</a>
+    <a href="buildings.html">Buildings</a>
+    <a href="units.html">Units</a>
+    <a href="request.html">Maintenance Request</a>
+    <a href="technician.html">Technician Portal</a>
 </div>
 
 <div class="main">
     <h1>Properties</h1>
     <p>Add and manage properties using the Servora backend.</p>
 
-    <h2>Add Property</h2>
-
     <input id="propertyName" type="text" placeholder="Property Name">
-<input id="propertyAddress" type="text" placeholder="Property Address">
-<input id="propertyUnits" type="number" placeholder="Number of Units">
-    <button class="btn" onclick="addProperty()">Save Property</button>
+    <input id="propertyAddress" type="text" placeholder="Property Address">
+    <input id="propertyUnits" type="number" placeholder="Number of Units">
+
+    <button onclick="saveProperty()">Save Property</button>
 
     <h2>Saved Properties</h2>
     <div id="propertyList"></div>
@@ -103,20 +103,18 @@ const API_URL = "http://localhost:3000";
 async function loadProperties() {
     const response = await fetch(API_URL + "/properties");
     const properties = await response.json();
-    await fetch(API_URL + "/properties", {
-    method: "POST",
 
-    const propertyList = document.getElementById("propertyList");
-    propertyList.innerHTML = "";
+    const list = document.getElementById("propertyList");
+    list.innerHTML = "";
 
     if (properties.length === 0) {
-        propertyList.innerHTML = "<p>No properties added yet.</p>";
+        list.innerHTML = "<p>No properties saved yet.</p>";
         return;
     }
 
-    properties.forEach(function(property) {
-        propertyList.innerHTML += `
-            <div class="property-card">
+    properties.forEach(property => {
+        list.innerHTML += `
+            <div class="card">
                 <h3>${property.name}</h3>
                 <p><span class="label">Address:</span> ${property.address}</p>
                 <p><span class="label">Units:</span> ${property.units}</p>
@@ -125,15 +123,13 @@ async function loadProperties() {
     });
 }
 
-async function addProperty() {
-    const property = {
-        name: document.getElementById("propertyName").value,
-        address: document.getElementById("propertyAddress").value,
-        units: document.getElementById("propertyUnits").value
-    };
+async function saveProperty() {
+    const name = document.getElementById("propertyName").value;
+    const address = document.getElementById("propertyAddress").value;
+    const units = document.getElementById("propertyUnits").value;
 
-    if (property.name === "" || property.address === "" || property.units === "") {
-        alert("Please fill out all fields.");
+    if (name === "" || address === "" || units === "") {
+        alert("Complete all fields.");
         return;
     }
 
@@ -142,7 +138,11 @@ async function addProperty() {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(property)
+        body: JSON.stringify({
+            name: name,
+            address: address,
+            units: units
+        })
     });
 
     document.getElementById("propertyName").value = "";
