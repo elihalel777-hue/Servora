@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Units - Servora</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    position: fixed;
+    padding: 25px;
+}
+
+.sidebar h2 {
+    color: #60a5fa;
+}
+
+.sidebar a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin: 18px 0;
+}
+
+.main {
+    margin-left: 270px;
+    padding: 30px;
+}
+
+select, input {
+    width: 100%;
+    max-width: 500px;
+    padding: 14px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    display: block;
+}
+
+.btn {
+    padding: 14px 22px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.delete {
+    background: #ef4444;
+    margin-top: 10px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 700px;
+    margin: 20px 0;
+}
+
+.label {
+    color: #60a5fa;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>SERVORA</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="properties.html">Properties</a>
+    <a href="buildings.html">Buildings</a>
+    <a href="units.html">Units</a>
+    <a href="request.html">New Request</a>
+    <a href="technician.html">Technician Portal</a>
+    <a href="index.html">Home</a>
+</div>
+
+<div class="main">
+    <h1>Units</h1>
+    <p>Add units and connect them to a property and building.</p>
+
+    <h2>Add Unit</h2>
+
+    <select id="propertySelect" onchange="loadBuildings()">
+        <option value="">Select Property</option>
+    </select>
+
+    <select id="buildingSelect">
+        <option value="">Select Building</option>
+    </select>
+
+    <input id="unitNumber" type="text" placeholder="Unit Number">
+
+    <button class="btn" onclick="saveUnit()">Save Unit</button>
+
+    <h2>Saved Units</h2>
+    <div id="unitList"></div>
+</div>
+
+<script>
+let properties = JSON.parse(localStorage.getItem("properties")) || [];
+let buildings = JSON.parse(localStorage.getItem("buildings")) || [];
+let units = JSON.parse(localStorage.getItem("units")) || [];
+
+let propertySelect = document.getElementById("propertySelect");
+let buildingSelect = document.getElementById("buildingSelect");
+let unitList = document.getElementById("unitList");
+
+properties.forEach(function(property) {
+    let option = document.createElement("option");
+    option.value = property.name;
+    option.textContent = property.name;
+    propertySelect.appendChild(option);
+});
+
+function loadBuildings() {
+    let selectedProperty = propertySelect.value;
+
+    buildingSelect.innerHTML = '<option value="">Select Building</option>';
+
+    buildings
+        .filter(building => building.property === selectedProperty)
+        .forEach(function(building) {
+            let option = document.createElement("option");
+            option.value = building.name;
+            option.textContent = building.name;
+            buildingSelect.appendChild(option);
+        });
+}
+
+function saveUnit() {
+    let property = propertySelect.value;
+    let building = buildingSelect.value;
+    let unitNumber = document.getElementById("unitNumber").value;
+
+    if (property === "") {
+        alert("Please select a property.");
+        return;
+    }
+
+    if (building === "") {
+        alert("Please select a building.");
+        return;
+    }
+
+    if (unitNumber === "") {
+        alert("Please enter a unit number.");
+        return;
+    }
+
+    units.push({
+        property: property,
+        building: building,
+        unit: unitNumber
+    });
+
+    localStorage.setItem("units", JSON.stringify(units));
+
+    document.getElementById("unitNumber").value = "";
+
+    displayUnits();
+}
+
+function deleteUnit(index) {
+    units.splice(index, 1);
+    localStorage.setItem("units", JSON.stringify(units));
+    displayUnits();
+}
+
+function displayUnits() {
+    unitList.innerHTML = "";
+
+    if (units.length === 0) {
+        unitList.innerHTML = "<p>No units created yet.</p>";
+        return;
+    }
+
+    units.forEach(function(unit, index) {
+        unitList.innerHTML += `
+            <div class="card">
+                <h3>Unit ${unit.unit}</h3>
+                <p><span class="label">Property:</span> ${unit.property}</p>
+                <p><span class="label">Building:</span> ${unit.building}</p>
+                <button class="btn delete" onclick="deleteUnit(${index})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+displayUnits();
+</script>
+
+</body>
+</html>
