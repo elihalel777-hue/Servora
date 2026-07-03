@@ -43,6 +43,11 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    margin: 8px 8px 8px 0;
+}
+
+.btn:hover {
+    background: #2563eb;
 }
 
 .cards {
@@ -53,7 +58,8 @@ body {
 }
 
 .card,
-.request-card {
+.request-card,
+.activity-card {
     background: #1e293b;
     padding: 20px;
     border-radius: 12px;
@@ -64,6 +70,11 @@ body {
 }
 
 .request-card {
+    max-width: 760px;
+    margin-bottom: 20px;
+}
+
+.activity-card {
     max-width: 760px;
     margin-bottom: 20px;
 }
@@ -80,6 +91,10 @@ small {
 hr {
     border: 1px solid #334155;
 }
+
+.section-title {
+    margin-top: 35px;
+}
 </style>
 </head>
 
@@ -90,16 +105,29 @@ hr {
     <a href="dashboard.html">Dashboard</a>
     <a href="request.html">New Request</a>
     <a href="#workOrders">Work Orders</a>
+    <a href="technician.html">Technician Portal</a>
     <a href="index.html">Home</a>
 </div>
 
 <div class="main">
-    <h1>Maintenance Dashboard</h1>
-    <p>AI-powered overview of your maintenance operations.</p>
+    <h1>Manager Dashboard</h1>
+    <p>AI-powered command center for your maintenance operations.</p>
 
-    <button class="btn" onclick="window.location.href='request.html'">
-        + New Maintenance Request
-    </button>
+    <div>
+        <button class="btn" onclick="window.location.href='request.html'">
+            + New Maintenance Request
+        </button>
+
+        <button class="btn" onclick="window.location.href='technician.html'">
+            Technician Portal
+        </button>
+
+        <button class="btn" onclick="document.getElementById('workOrders').scrollIntoView()">
+            View Work Orders
+        </button>
+    </div>
+
+    <h2 class="section-title">Today's Overview</h2>
 
     <div class="cards">
         <div class="card">
@@ -116,12 +144,20 @@ hr {
             <h3>Work Orders</h3>
             <h1 id="workOrderCount">0</h1>
         </div>
+
+        <div class="card">
+            <h3>Completed Jobs</h3>
+            <h1 id="completedCount">0</h1>
+        </div>
     </div>
 
-    <h2>Recent Requests</h2>
+    <h2 class="section-title">Latest Activity</h2>
+    <div id="activityFeed"></div>
+
+    <h2 class="section-title">Recent Requests</h2>
     <div id="recent"></div>
 
-    <h2 id="workOrders">Work Orders</h2>
+    <h2 id="workOrders" class="section-title">Work Orders</h2>
     <div id="workOrderList"></div>
 </div>
 
@@ -135,14 +171,43 @@ document.getElementById("alertCount").textContent =
 
 document.getElementById("workOrderCount").textContent = requests.length;
 
+let completedJobs = 0;
+
+requests.forEach((r, index) => {
+    let statusKey = "status_" + index;
+    let status = localStorage.getItem(statusKey) || "Pending";
+
+    if (status === "Completed") {
+        completedJobs++;
+    }
+});
+
+document.getElementById("completedCount").textContent = completedJobs;
+
+const activityFeed = document.getElementById("activityFeed");
 const recent = document.getElementById("recent");
 const workOrderList = document.getElementById("workOrderList");
 
 if (requests.length === 0) {
+    activityFeed.innerHTML = "<p>No activity yet.</p>";
     recent.innerHTML = "<p>No requests submitted yet.</p>";
     workOrderList.innerHTML = "<p>No work orders created yet.</p>";
 } else {
     requests.slice().reverse().forEach((r, index) => {
+        let statusKey = "status_" + index;
+        let status = localStorage.getItem(statusKey) || "Pending";
+
+        activityFeed.innerHTML += `
+            <div class="activity-card">
+                <p>
+                    <span class="label">AI Created Work Order:</span>
+                    ${r.category} request for ${r.property}, Unit ${r.unit}
+                </p>
+                <p><span class="label">Status:</span> ${status}</p>
+                <small>${r.date}</small>
+            </div>
+        `;
+
         recent.innerHTML += `
             <div class="request-card">
                 <h3>${r.category} - ${r.priority}</h3>
@@ -172,7 +237,7 @@ if (requests.length === 0) {
                 <p><span class="label">Issue Type:</span> ${r.category}</p>
                 <p><span class="label">Priority:</span> ${r.priority}</p>
                 <p><span class="label">Assigned Technician:</span> ${r.technician}</p>
-                <p><span class="label">Status:</span> Pending</p>
+                <p><span class="label">Status:</span> ${status}</p>
                 <p><span class="label">Work Order:</span> ${r.suggestedWorkOrder}</p>
 
                 <small>Created: ${r.date}</small>
