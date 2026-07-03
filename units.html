@@ -1,208 +1,266 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Units - Servora</title>
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
 }
 
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #020617;
-    position: fixed;
-    padding: 25px;
+.sidebar{
+    width:220px;
+    height:100vh;
+    position:fixed;
+    background:#020617;
+    padding:25px;
 }
 
-.sidebar h2 {
-    color: #60a5fa;
+.sidebar h2{
+    color:#60a5fa;
 }
 
-.sidebar a {
-    display: block;
-    color: #cbd5e1;
-    text-decoration: none;
-    margin: 18px 0;
+.sidebar a{
+    display:block;
+    color:#cbd5e1;
+    text-decoration:none;
+    margin:18px 0;
 }
 
-.main {
-    margin-left: 270px;
-    padding: 30px;
+.main{
+    margin-left:270px;
+    padding:30px;
 }
 
-select, input {
-    width: 100%;
-    max-width: 500px;
-    padding: 14px;
-    margin: 12px 0;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    display: block;
+input,select{
+    width:100%;
+    max-width:600px;
+    padding:14px;
+    margin:12px 0;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
 }
 
-.btn {
-    padding: 14px 22px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+button{
+    padding:14px 24px;
+    border:none;
+    border-radius:8px;
+    background:#3b82f6;
+    color:white;
+    cursor:pointer;
 }
 
-.delete {
-    background: #ef4444;
-    margin-top: 10px;
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+    margin-top:20px;
 }
 
-.card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    max-width: 700px;
-    margin: 20px 0;
-}
-
-.label {
-    color: #60a5fa;
-    font-weight: bold;
+.label{
+    color:#60a5fa;
+    font-weight:bold;
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h2>SERVORA</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="properties.html">Properties</a>
-    <a href="buildings.html">Buildings</a>
-    <a href="units.html">Units</a>
-    <a href="request.html">New Request</a>
-    <a href="technician.html">Technician Portal</a>
-    <a href="index.html">Home</a>
+
+<h2>SERVORA</h2>
+
+<a href="dashboard.html">Dashboard</a>
+<a href="properties.html">Properties</a>
+<a href="buildings.html">Buildings</a>
+<a href="units.html">Units</a>
+<a href="request.html">Maintenance Request</a>
+<a href="technician.html">Technician Portal</a>
+
 </div>
 
 <div class="main">
-    <h1>Units</h1>
-    <p>Add units and connect them to a property and building.</p>
 
-    <h2>Add Unit</h2>
+<h1>Units</h1>
 
-    <select id="propertySelect" onchange="loadBuildings()">
-        <option value="">Select Property</option>
-    </select>
+<p>Add units to each building.</p>
 
-    <select id="buildingSelect">
-        <option value="">Select Building</option>
-    </select>
+<select id="propertySelect">
+<option>Select Property</option>
+</select>
 
-    <input id="unitNumber" type="text" placeholder="Unit Number">
+<select id="buildingSelect">
+<option>Select Building</option>
+</select>
 
-    <button class="btn" onclick="saveUnit()">Save Unit</button>
+<input
+id="unitNumber"
+placeholder="Unit Number">
 
-    <h2>Saved Units</h2>
-    <div id="unitList"></div>
-</div>
+<button onclick="saveUnit()">
+
+Save Unit
+
+</button>
+
+<h2>Saved Units</h2>
+
+<div id="unitList"></div>
 
 <script>
-let properties = JSON.parse(localStorage.getItem("properties")) || [];
-let buildings = JSON.parse(localStorage.getItem("buildings")) || [];
-let units = JSON.parse(localStorage.getItem("units")) || [];
 
-let propertySelect = document.getElementById("propertySelect");
-let buildingSelect = document.getElementById("buildingSelect");
-let unitList = document.getElementById("unitList");
+const API_URL="http://localhost:3000";
 
-properties.forEach(function(property) {
-    let option = document.createElement("option");
-    option.value = property.name;
-    option.textContent = property.name;
-    propertySelect.appendChild(option);
+let buildings=[];
+
+async function loadProperties(){
+
+const response=await fetch(API_URL+"/properties");
+
+const properties=await response.json();
+
+const dropdown=document.getElementById("propertySelect");
+
+dropdown.innerHTML="<option>Select Property</option>";
+
+properties.forEach(property=>{
+
+dropdown.innerHTML+=`
+
+<option value="${property.name}">
+
+${property.name}
+
+</option>
+
+`;
+
 });
 
-function loadBuildings() {
-    let selectedProperty = propertySelect.value;
-
-    buildingSelect.innerHTML = '<option value="">Select Building</option>';
-
-    buildings
-        .filter(building => building.property === selectedProperty)
-        .forEach(function(building) {
-            let option = document.createElement("option");
-            option.value = building.name;
-            option.textContent = building.name;
-            buildingSelect.appendChild(option);
-        });
 }
 
-function saveUnit() {
-    let property = propertySelect.value;
-    let building = buildingSelect.value;
-    let unitNumber = document.getElementById("unitNumber").value;
+async function loadBuildings(){
 
-    if (property === "") {
-        alert("Please select a property.");
-        return;
-    }
+const response = await fetch(API_URL + "/buildings");
+buildings = await response.json();
 
-    if (building === "") {
-        alert("Please select a building.");
-        return;
-    }
+updateBuildingDropdown();
 
-    if (unitNumber === "") {
-        alert("Please enter a unit number.");
-        return;
-    }
-
-    units.push({
-        property: property,
-        building: building,
-        unit: unitNumber
-    });
-
-    localStorage.setItem("units", JSON.stringify(units));
-
-    document.getElementById("unitNumber").value = "";
-
-    displayUnits();
 }
 
-function deleteUnit(index) {
-    units.splice(index, 1);
-    localStorage.setItem("units", JSON.stringify(units));
-    displayUnits();
+function updateBuildingDropdown(){
+
+const property = document.getElementById("propertySelect").value;
+
+const dropdown = document.getElementById("buildingSelect");
+
+dropdown.innerHTML = "<option>Select Building</option>";
+
+buildings
+.filter(building => building.property === property)
+.forEach(building => {
+
+dropdown.innerHTML += `
+<option value="${building.name}">
+${building.name}
+</option>
+`;
+
+});
+
 }
 
-function displayUnits() {
-    unitList.innerHTML = "";
+document.getElementById("propertySelect").addEventListener("change", updateBuildingDropdown);
 
-    if (units.length === 0) {
-        unitList.innerHTML = "<p>No units created yet.</p>";
-        return;
-    }
+async function loadUnits(){
 
-    units.forEach(function(unit, index) {
-        unitList.innerHTML += `
-            <div class="card">
-                <h3>Unit ${unit.unit}</h3>
-                <p><span class="label">Property:</span> ${unit.property}</p>
-                <p><span class="label">Building:</span> ${unit.building}</p>
-                <button class="btn delete" onclick="deleteUnit(${index})">Delete</button>
-            </div>
-        `;
-    });
+const response = await fetch(API_URL + "/units");
+
+const units = await response.json();
+
+const list = document.getElementById("unitList");
+
+list.innerHTML = "";
+
+if(units.length === 0){
+
+list.innerHTML = "<p>No units created.</p>";
+
+return;
+
 }
 
-displayUnits();
+units.forEach(unit=>{
+
+list.innerHTML += `
+
+<div class="card">
+
+<h3>Unit ${unit.unit}</h3>
+
+<p><span class="label">Property:</span> ${unit.property}</p>
+
+<p><span class="label">Building:</span> ${unit.building}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+async function saveUnit(){
+
+const property = document.getElementById("propertySelect").value;
+const building = document.getElementById("buildingSelect").value;
+const unit = document.getElementById("unitNumber").value;
+
+if(property==="" || building==="" || unit===""){
+
+alert("Complete all fields.");
+
+return;
+
+}
+
+await fetch(API_URL + "/units",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+property:property,
+building:building,
+unit:unit
+
+})
+
+});
+
+document.getElementById("unitNumber").value="";
+
+loadUnits();
+
+}
+
+loadProperties();
+loadBuildings();
+loadUnits();
+
 </script>
+
+</div>
 
 </body>
 </html>
