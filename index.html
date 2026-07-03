@@ -1,233 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Servora</title>
-
+    <title>Servora Login</title>
     <style>
-
-        body{
-            font-family:Arial;
-            margin:0;
-            background:#0f172a;
-            color:white;
-            text-align:center;
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
         }
 
-        header{
-            background:#111827;
-            padding:70px 20px;
+        .login-box {
+            background: #111827;
+            padding: 40px;
+            border-radius: 15px;
+            width: 360px;
         }
 
-        h1{
-            font-size:52px;
-            margin:0;
+        h1 {
+            color: #60a5fa;
+            margin-bottom: 10px;
         }
 
-        p{
-            color:#cbd5e1;
-            font-size:20px;
+        p {
+            color: #cbd5e1;
         }
 
-        .btn{
-            background:#3b82f6;
-            color:white;
-            padding:14px 28px;
-            border:none;
-            border-radius:8px;
-            font-size:18px;
-            cursor:pointer;
-            margin-top:25px;
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
-        .btn:hover{
-            background:#2563eb;
+        .btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
         }
 
-        .section{
-            padding:60px 20px;
+        .btn:hover {
+            background: #2563eb;
         }
 
-        .cards{
-            display:flex;
-            justify-content:center;
-            flex-wrap:wrap;
-            gap:20px;
-            margin-top:30px;
+        a {
+            color: #60a5fa;
+            text-decoration: none;
         }
 
-        .card{
-            background:#1e293b;
-            width:280px;
-            padding:25px;
-            border-radius:12px;
-            text-align:left;
+        .links {
+            margin-top: 20px;
         }
-
-        .card h3{
-            color:#60a5fa;
-        }
-
-        .card p{
-            font-size:16px;
-        }
-
-        .pricing{
-            background:#111827;
-        }
-
-        footer{
-            background:#020617;
-            padding:30px;
-            color:#94a3b8;
-        }
-
     </style>
-
 </head>
-
 <body>
 
-<header>
-
+<div class="login-box">
     <h1>SERVORA</h1>
+    <p>Login to your maintenance dashboard</p>
 
-    <p>AI-Powered Maintenance Operations for Property Managers</p>
-
-    <button class="btn" onclick="window.location.href='login.html'">
-        Enter Dashboard
-    </button>
-
-</header>
-
-<div class="section">
-
-    <h2>What is Servora?</h2>
-
-    <p>
-        Servora helps property managers automate maintenance requests,
-        work orders, technician assignments, and issue tracking using AI.
-    </p>
-
-</div>
-
-<div class="section">
-
-    <h2>Core Features</h2>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>AI Request Sorting</h3>
-            <p>Automatically reads tenant requests and categorizes maintenance issues.</p>
-        </div>
-
-        <div class="card">
-            <h3>Automated Work Orders</h3>
-            <p>Creates work orders instantly without manual data entry.</p>
-        </div>
-
-        <div class="card">
-            <h3>Technician Assignment</h3>
-            <p>Assigns maintenance jobs to the right technician automatically.</p>
-        </div>
-
-        <div class="card">
-            <h3>Emergency Detection</h3>
-            <p>Flags leaks, electrical issues, HVAC failures, and safety hazards.</p>
-        </div>
-
-        <div class="card">
-            <h3>Maintenance Dashboard</h3>
-            <p>View requests, work orders, technician status, and alerts in one place.</p>
-        </div>
-
-        <div class="card">
-            <h3>AI Recommendations</h3>
-            <p>Suggests repair priorities and identifies recurring maintenance issues.</p>
-        </div>
-
-    </div>
-
-</div>
-
-<div class="section">
-
-    <h2>How It Works</h2>
-
-    <p>
-
-        1. Tenant submits a maintenance request<br><br>
-
-        2. AI reads and categorizes the issue<br><br>
-
-        3. Servora creates a work order<br><br>
-
-        4. Technician is assigned<br><br>
-
-        5. Manager tracks everything through the dashboard
-
-    </p>
-
-</div>
-
-<div class="section">
-
-    <h2>Built for Property Managers</h2>
-
-    <p>
-
-        Reduce maintenance chaos, respond faster,
-        and keep tenants happier with AI.
-
-    </p>
-
-</div>
-
-<div class="section pricing">
-
-    <h2>Simple Pricing</h2>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>Starter</h3>
-            <p>$299/month</p>
-            <p>Perfect for small property managers.</p>
-        </div>
-
-        <div class="card">
-            <h3>Professional</h3>
-            <p>$799/month</p>
-            <p>AI automation for growing property management companies.</p>
-        </div>
-
-        <div class="card">
-            <h3>Enterprise</h3>
-            <p>Custom Pricing</p>
-            <p>For large organizations managing multiple properties.</p>
-        </div>
-
-    </div>
-
-</div>
-
-<div class="section">
-
-    <h2>Ready to simplify maintenance?</h2>
-
-    <p>Start using AI to automate your maintenance operations today.</p>
+    <input type="email" placeholder="Email Address">
+    <input type="password" placeholder="Password">
 
     <button class="btn" onclick="window.location.href='dashboard.html'">
-        Enter Dashboard
+        Login
     </button>
 
+    <div class="links">
+        <p><a href="#">Forgot Password?</a></p>
+        <p><a href="#">Create Account</a></p>
+        <p><a href="index.html">Back to Home</a></p>
+    </div>
 </div>
-
-<footer>
-
-    © 2026 Servora. All Rights Reserved.
-
-</footer>
 
 </body>
 </html>
