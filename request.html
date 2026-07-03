@@ -3,117 +3,99 @@
 <head>
     <title>New Maintenance Request - Servora</title>
     <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #0f172a;
-            color: white;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 50px auto;
-            background: #111827;
-            padding: 40px;
-            border-radius: 15px;
-        }
-
-        h1 {
-            color: #60a5fa;
-        }
-
-        p {
-            color: #cbd5e1;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        textarea {
-            height: 120px;
-        }
-
-        .btn {
-            padding: 15px 25px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 17px;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background: #2563eb;
-        }
-
-        a {
-            color: #60a5fa;
-            text-decoration: none;
-        }
+        body { font-family: Arial; margin: 0; background: #0f172a; color: white; }
+        .container { max-width: 700px; margin: 50px auto; background: #111827; padding: 40px; border-radius: 15px; }
+        h1 { color: #60a5fa; }
+        p { color: #cbd5e1; }
+        input, textarea { width: 100%; padding: 14px; margin: 12px 0; border: none; border-radius: 8px; font-size: 16px; }
+        textarea { height: 140px; }
+        .btn { padding: 15px 25px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 17px; cursor: pointer; }
+        .btn:hover { background: #2563eb; }
+        a { color: #60a5fa; text-decoration: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>New Maintenance Request</h1>
-    <p>Submit a maintenance issue for AI review and work order creation.</p>
+    <p>Describe the issue. Servora AI will analyze it automatically.</p>
 
     <input id="property" type="text" placeholder="Property Name">
     <input id="unit" type="text" placeholder="Unit Number">
 
-    <select id="category">
-        <option>Select Issue Category</option>
-        <option>Plumbing</option>
-        <option>Electrical</option>
-        <option>HVAC</option>
-        <option>Appliance</option>
-        <option>General Maintenance</option>
-        <option>Emergency</option>
-    </select>
+    <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
 
-    <select id="priority">
-        <option>Select Priority</option>
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-        <option>Emergency</option>
-    </select>
-
-    <textarea id="description" placeholder="Describe the maintenance issue..."></textarea>
-
-    <button class="btn" onclick="submitRequest()">
-        Submit Request
-    </button>
+    <button class="btn" onclick="submitRequest()">Submit Request</button>
 
     <p><a href="dashboard.html">Back to Dashboard</a></p>
 </div>
 
 <script>
+function analyzeRequest(description) {
+    let text = description.toLowerCase();
+
+    let category = "General Maintenance";
+    let priority = "Medium";
+    let technician = "General Technician";
+    let responseTime = "24 hours";
+    let suggestedWorkOrder = "Review the issue and assign the proper technician.";
+
+    if (text.includes("leak") || text.includes("water") || text.includes("pipe") || text.includes("sink") || text.includes("toilet")) {
+        category = "Plumbing";
+        priority = "High";
+        technician = "Plumber";
+        responseTime = "2 hours";
+        suggestedWorkOrder = "Inspect plumbing lines, shut off water if needed, and repair leak source.";
+    }
+
+    if (text.includes("ac") || text.includes("air conditioner") || text.includes("hvac") || text.includes("cooling") || text.includes("heat")) {
+        category = "HVAC";
+        priority = "High";
+        technician = "HVAC Technician";
+        responseTime = "4 hours";
+        suggestedWorkOrder = "Inspect HVAC system, thermostat, compressor, and airflow.";
+    }
+
+    if (text.includes("electric") || text.includes("outlet") || text.includes("power") || text.includes("sparking") || text.includes("breaker")) {
+        category = "Electrical";
+        priority = "Emergency";
+        technician = "Electrician";
+        responseTime = "Immediate";
+        suggestedWorkOrder = "Inspect electrical system immediately and secure the area.";
+    }
+
+    if (text.includes("fridge") || text.includes("refrigerator") || text.includes("stove") || text.includes("oven") || text.includes("dishwasher")) {
+        category = "Appliance";
+        priority = "Medium";
+        technician = "Appliance Technician";
+        responseTime = "24 hours";
+        suggestedWorkOrder = "Inspect appliance, diagnose failure, and repair or replace faulty parts.";
+    }
+
+    return { category, priority, technician, responseTime, suggestedWorkOrder };
+}
+
 function submitRequest() {
+    let description = document.getElementById("description").value;
+    let ai = analyzeRequest(description);
+
     let request = {
         property: document.getElementById("property").value,
         unit: document.getElementById("unit").value,
-        category: document.getElementById("category").value,
-        priority: document.getElementById("priority").value,
-        description: document.getElementById("description").value,
+        description: description,
+        category: ai.category,
+        priority: ai.priority,
+        technician: ai.technician,
+        responseTime: ai.responseTime,
+        suggestedWorkOrder: ai.suggestedWorkOrder,
         date: new Date().toLocaleString()
     };
 
     let requests = JSON.parse(localStorage.getItem("requests")) || [];
-
     requests.push(request);
-
     localStorage.setItem("requests", JSON.stringify(requests));
 
-    alert("Request submitted successfully!");
-
+    alert("Request submitted! Servora AI analyzed the issue.");
     window.location.href = "dashboard.html";
 }
 </script>
