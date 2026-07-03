@@ -63,6 +63,14 @@
             margin-bottom: 20px;
         }
 
+        .request-card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+
         .alert {
             color: #facc15;
         }
@@ -73,6 +81,10 @@
 
         .danger {
             color: #ef4444;
+        }
+
+        small {
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -99,8 +111,8 @@
     <div class="cards">
         <div class="card">
             <h3>Open Requests</h3>
-            <h1>24</h1>
-            <p class="alert">6 urgent</p>
+            <h1 id="openRequests">24</h1>
+            <p class="alert">Includes submitted requests</p>
         </div>
 
         <div class="card">
@@ -117,7 +129,7 @@
 
         <div class="card">
             <h3>AI Alerts</h3>
-            <h1>3</h1>
+            <h1 id="aiAlerts">3</h1>
             <p class="danger">Needs attention</p>
         </div>
     </div>
@@ -138,7 +150,41 @@
         <h3 class="success">Completed Work</h3>
         <p>Unit 305 garbage disposal repair was completed today.</p>
     </div>
+
+    <h2>Recent Requests</h2>
+
+    <div id="recentRequests"></div>
 </div>
+
+<script>
+    let requests = JSON.parse(localStorage.getItem("requests")) || [];
+
+    let recentRequests = document.getElementById("recentRequests");
+
+    if (requests.length === 0) {
+        recentRequests.innerHTML = "<p>No new requests submitted yet.</p>";
+    } else {
+        requests.forEach(function(req) {
+            recentRequests.innerHTML += `
+                <div class="request-card">
+                    <h3>${req.category} - ${req.priority}</h3>
+                    <p><strong>Property:</strong> ${req.property}</p>
+                    <p><strong>Unit:</strong> ${req.unit}</p>
+                    <p><strong>Description:</strong> ${req.description}</p>
+                    <p><small>Submitted: ${req.date}</small></p>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById("openRequests").innerText = 24 + requests.length;
+
+    let urgentCount = requests.filter(function(req) {
+        return req.priority === "High" || req.priority === "Emergency";
+    }).length;
+
+    document.getElementById("aiAlerts").innerText = 3 + urgentCount;
+</script>
 
 </body>
 </html>
