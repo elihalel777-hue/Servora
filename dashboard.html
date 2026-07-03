@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Servora Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            background: #020617;
+            position: fixed;
+            padding: 25px;
+        }
+
+        .sidebar h2 {
+            color: #60a5fa;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+
+        .main {
+            margin-left: 270px;
+            padding: 30px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            width: 240px;
+        }
+
+        .alert {
+            color: #facc15;
+        }
+
+        .success {
+            color: #22c55e;
+        }
+
+        .danger {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>SERVORA</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#">Requests</a>
+    <a href="#">Work Orders</a>
+    <a href="#">Technicians</a>
+    <a href="#">Properties</a>
+    <a href="index.html">Logout</a>
+</div>
+
+<div class="main">
+    <h1>Maintenance Dashboard</h1>
+    <p>AI-powered overview of your property maintenance operations.</p>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Open Requests</h3>
+            <h1>24</h1>
+            <p class="alert">6 urgent</p>
+        </div>
+
+        <div class="card">
+            <h3>Work Orders</h3>
+            <h1>18</h1>
+            <p class="success">12 in progress</p>
+        </div>
+
+        <div class="card">
+            <h3>Technicians</h3>
+            <h1>7</h1>
+            <p class="success">5 available</p>
+        </div>
+
+        <div class="card">
+            <h3>AI Alerts</h3>
+            <h1>3</h1>
+            <p class="danger">Needs attention</p>
+        </div>
+    </div>
+
+    <h2>AI Priority Alerts</h2>
+
+    <div class="card">
+        <h3 class="danger">Emergency Leak</h3>
+        <p>Unit 204 reported water leaking under the sink. AI marked this as urgent.</p>
+    </div>
+
+    <br>
+
+    <div class="card">
+        <h3 class="alert">HVAC Issue</h3>
+        <p>Unit 118 AC is not cooling. AI recommends assigning an HVAC technician.</p>
+    </div>
+
+    <br>
+
+    <div class="card">
+        <h3 class="success">Completed Work</h3>
+        <p>Unit 305 garbage disposal repair was completed today.</p>
+    </div>
+</div>
+
+</body>
+</html>
