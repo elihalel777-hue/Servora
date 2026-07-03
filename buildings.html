@@ -5,7 +5,6 @@
 <title>Buildings - Servora</title>
 
 <style>
-
 body{
     margin:0;
     font-family:Arial;
@@ -16,8 +15,8 @@ body{
 .sidebar{
     width:220px;
     height:100vh;
-    background:#020617;
     position:fixed;
+    background:#020617;
     padding:25px;
 }
 
@@ -37,9 +36,9 @@ body{
     padding:30px;
 }
 
-select,input{
+input,select{
     width:100%;
-    max-width:500px;
+    max-width:600px;
     padding:14px;
     margin:12px 0;
     border:none;
@@ -47,19 +46,20 @@ select,input{
     font-size:16px;
 }
 
-.btn{
-    padding:14px 22px;
-    background:#3b82f6;
-    color:white;
+button{
+    padding:14px 24px;
     border:none;
     border-radius:8px;
+    background:#3b82f6;
+    color:white;
     cursor:pointer;
+    font-size:16px;
 }
 
 .card{
     background:#1e293b;
     padding:20px;
-    border-radius:12px;
+    border-radius:10px;
     margin-top:20px;
     max-width:700px;
 }
@@ -68,12 +68,6 @@ select,input{
     color:#60a5fa;
     font-weight:bold;
 }
-
-.delete{
-    background:#ef4444;
-    margin-top:15px;
-}
-
 </style>
 
 </head>
@@ -85,16 +79,11 @@ select,input{
 <h2>SERVORA</h2>
 
 <a href="dashboard.html">Dashboard</a>
-
 <a href="properties.html">Properties</a>
-
 <a href="buildings.html">Buildings</a>
-
-<a href="technician.html">Technicians</a>
-
-<a href="request.html">New Request</a>
-
-<a href="index.html">Home</a>
+<a href="units.html">Units</a>
+<a href="request.html">Maintenance Request</a>
+<a href="technician.html">Technician Portal</a>
 
 </div>
 
@@ -114,15 +103,13 @@ select,input{
 id="buildingName"
 placeholder="Building Name">
 
-<button
-class="btn"
-onclick="saveBuilding()">
+<button onclick="saveBuilding()">
 
 Save Building
 
 </button>
 
-<h2>Saved Buildings</h2>
+<h2>Buildings</h2>
 
 <div id="buildingList"></div>
 
@@ -130,42 +117,53 @@ Save Building
 
 <script>
 
-let properties=
-JSON.parse(localStorage.getItem("properties"))||[];
+const API_URL="http://localhost:3000";
 
-let buildings=
-JSON.parse(localStorage.getItem("buildings"))||[];
+async function loadProperties(){
 
-let propertySelect=
-document.getElementById("propertySelect");
+const response=await fetch(API_URL+"/properties");
 
-properties.forEach(function(property){
+const properties=await response.json();
 
-let option=document.createElement("option");
+const dropdown=document.getElementById("propertySelect");
 
-option.value=property.name;
+dropdown.innerHTML="<option>Select Property</option>";
 
-option.textContent=property.name;
+properties.forEach(property=>{
 
-propertySelect.appendChild(option);
+dropdown.innerHTML+=`
+
+<option value="${property.name}">
+
+${property.name}
+
+</option>
+
+`;
 
 });
 
-function displayBuildings(){
+}
 
-let list=document.getElementById("buildingList");
+async function loadBuildings(){
+
+const response=await fetch(API_URL+"/buildings");
+
+const buildings=await response.json();
+
+const list=document.getElementById("buildingList");
 
 list.innerHTML="";
 
 if(buildings.length===0){
 
-list.innerHTML="<p>No buildings created yet.</p>";
+list.innerHTML="<p>No buildings created.</p>";
 
 return;
 
 }
 
-buildings.forEach(function(building,index){
+buildings.forEach(building=>{
 
 list.innerHTML+=`
 
@@ -185,16 +183,6 @@ ${building.property}
 
 </p>
 
-<button
-
-class="btn delete"
-
-onclick="deleteBuilding(${index})">
-
-Delete
-
-</button>
-
 </div>
 
 `;
@@ -203,73 +191,52 @@ Delete
 
 }
 
-function saveBuilding(){
+async function saveBuilding(){
 
-let property=
+const property=document.getElementById("propertySelect").value;
 
-propertySelect.value;
+const building=document.getElementById("buildingName").value;
 
-let name=
+if(property===""||building===""){
 
-document.getElementById("buildingName").value;
-
-if(property===""){
-
-alert("Select a property.");
+alert("Complete all fields.");
 
 return;
 
 }
 
-if(name===""){
+await fetch(API_URL+"/buildings",{
 
-alert("Enter a building name.");
+method:"POST",
 
-return;
+headers:{
 
-}
+"Content-Type":"application/json"
 
-buildings.push({
+},
+
+body:JSON.stringify({
 
 property:property,
 
-name:name
+name:building
+
+})
 
 });
 
-localStorage.setItem(
-
-"buildings",
-
-JSON.stringify(buildings)
-
-);
-
 document.getElementById("buildingName").value="";
 
-displayBuildings();
+loadBuildings();
 
 }
 
-function deleteBuilding(index){
+loadProperties();
 
-buildings.splice(index,1);
-
-localStorage.setItem(
-
-"buildings",
-
-JSON.stringify(buildings)
-
-);
-
-displayBuildings();
-
-}
-
-displayBuildings();
+loadBuildings();
 
 </script>
 
 </body>
+
 </html>
