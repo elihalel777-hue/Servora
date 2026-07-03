@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Buildings - Servora</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+}
+
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#020617;
+    position:fixed;
+    padding:25px;
+}
+
+.sidebar h2{
+    color:#60a5fa;
+}
+
+.sidebar a{
+    display:block;
+    color:#cbd5e1;
+    text-decoration:none;
+    margin:18px 0;
+}
+
+.main{
+    margin-left:270px;
+    padding:30px;
+}
+
+select,input{
+    width:100%;
+    max-width:500px;
+    padding:14px;
+    margin:12px 0;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.btn{
+    padding:14px 22px;
+    background:#3b82f6;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    margin-top:20px;
+    max-width:700px;
+}
+
+.label{
+    color:#60a5fa;
+    font-weight:bold;
+}
+
+.delete{
+    background:#ef4444;
+    margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>SERVORA</h2>
+
+<a href="dashboard.html">Dashboard</a>
+
+<a href="properties.html">Properties</a>
+
+<a href="buildings.html">Buildings</a>
+
+<a href="technician.html">Technicians</a>
+
+<a href="request.html">New Request</a>
+
+<a href="index.html">Home</a>
+
+</div>
+
+<div class="main">
+
+<h1>Buildings</h1>
+
+<p>Create buildings for each property.</p>
+
+<select id="propertySelect">
+
+<option value="">Select Property</option>
+
+</select>
+
+<input
+id="buildingName"
+placeholder="Building Name">
+
+<button
+class="btn"
+onclick="saveBuilding()">
+
+Save Building
+
+</button>
+
+<h2>Saved Buildings</h2>
+
+<div id="buildingList"></div>
+
+</div>
+
+<script>
+
+let properties=
+JSON.parse(localStorage.getItem("properties"))||[];
+
+let buildings=
+JSON.parse(localStorage.getItem("buildings"))||[];
+
+let propertySelect=
+document.getElementById("propertySelect");
+
+properties.forEach(function(property){
+
+let option=document.createElement("option");
+
+option.value=property.name;
+
+option.textContent=property.name;
+
+propertySelect.appendChild(option);
+
+});
+
+function displayBuildings(){
+
+let list=document.getElementById("buildingList");
+
+list.innerHTML="";
+
+if(buildings.length===0){
+
+list.innerHTML="<p>No buildings created yet.</p>";
+
+return;
+
+}
+
+buildings.forEach(function(building,index){
+
+list.innerHTML+=`
+
+<div class="card">
+
+<h3>${building.name}</h3>
+
+<p>
+
+<span class="label">
+
+Property:
+
+</span>
+
+${building.property}
+
+</p>
+
+<button
+
+class="btn delete"
+
+onclick="deleteBuilding(${index})">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+function saveBuilding(){
+
+let property=
+
+propertySelect.value;
+
+let name=
+
+document.getElementById("buildingName").value;
+
+if(property===""){
+
+alert("Select a property.");
+
+return;
+
+}
+
+if(name===""){
+
+alert("Enter a building name.");
+
+return;
+
+}
+
+buildings.push({
+
+property:property,
+
+name:name
+
+});
+
+localStorage.setItem(
+
+"buildings",
+
+JSON.stringify(buildings)
+
+);
+
+document.getElementById("buildingName").value="";
+
+displayBuildings();
+
+}
+
+function deleteBuilding(index){
+
+buildings.splice(index,1);
+
+localStorage.setItem(
+
+"buildings",
+
+JSON.stringify(buildings)
+
+);
+
+displayBuildings();
+
+}
+
+displayBuildings();
+
+</script>
+
+</body>
+</html>
