@@ -34,6 +34,21 @@
             padding: 30px;
         }
 
+        .btn {
+            padding: 14px 22px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
         .cards {
             display: flex;
             gap: 20px;
@@ -45,6 +60,7 @@
             padding: 25px;
             border-radius: 12px;
             width: 240px;
+            margin-bottom: 20px;
         }
 
         .alert {
@@ -65,7 +81,7 @@
 <div class="sidebar">
     <h2>SERVORA</h2>
     <a href="dashboard.html">Dashboard</a>
-    <a href="#">Requests</a>
+    <a href="request.html">New Request</a>
     <a href="#">Work Orders</a>
     <a href="#">Technicians</a>
     <a href="#">Properties</a>
@@ -75,6 +91,10 @@
 <div class="main">
     <h1>Maintenance Dashboard</h1>
     <p>AI-powered overview of your property maintenance operations.</p>
+
+    <button class="btn" onclick="window.location.href='request.html'">
+        + New Maintenance Request
+    </button>
 
     <div class="cards">
         <div class="card">
@@ -109,14 +129,10 @@
         <p>Unit 204 reported water leaking under the sink. AI marked this as urgent.</p>
     </div>
 
-    <br>
-
     <div class="card">
         <h3 class="alert">HVAC Issue</h3>
         <p>Unit 118 AC is not cooling. AI recommends assigning an HVAC technician.</p>
     </div>
-
-    <br>
 
     <div class="card">
         <h3 class="success">Completed Work</h3>
