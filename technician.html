@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Servora Technician Portal</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    position: fixed;
+    padding: 25px;
+}
+
+.sidebar h2 {
+    color: #60a5fa;
+}
+
+.sidebar a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin: 18px 0;
+}
+
+.main {
+    margin-left: 270px;
+    padding: 30px;
+}
+
+.job-card {
+    background: #1e293b;
+    padding: 22px;
+    border-radius: 12px;
+    max-width: 760px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 12px 18px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.complete {
+    background: #22c55e;
+}
+
+.label {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+small {
+    color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>SERVORA</h2>
+    <a href="dashboard.html">Manager Dashboard</a>
+    <a href="request.html">New Request</a>
+    <a href="technician.html">Technician Portal</a>
+    <a href="index.html">Home</a>
+</div>
+
+<div class="main">
+    <h1>Technician Portal</h1>
+    <p>View assigned maintenance jobs and update work order status.</p>
+
+    <h2>Today's Jobs</h2>
+    <div id="jobs"></div>
+</div>
+
+<script>
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+let jobsDiv = document.getElementById("jobs");
+
+if (requests.length === 0) {
+    jobsDiv.innerHTML = "<p>No jobs assigned yet.</p>";
+} else {
+    requests.slice().reverse().forEach((r, index) => {
+        let statusKey = "status_" + index;
+        let status = localStorage.getItem(statusKey) || "Pending";
+
+        jobsDiv.innerHTML += `
+            <div class="job-card">
+                <h3>Work Order #${1001 + index}</h3>
+
+                <p><span class="label">Property:</span> ${r.property}</p>
+                <p><span class="label">Unit:</span> ${r.unit}</p>
+                <p><span class="label">Issue:</span> ${r.category}</p>
+                <p><span class="label">Priority:</span> ${r.priority}</p>
+                <p><span class="label">Technician Type:</span> ${r.technician}</p>
+                <p><span class="label">Suggested Work:</span> ${r.suggestedWorkOrder}</p>
+                <p><span class="label">Status:</span> <span id="${statusKey}">${status}</span></p>
+
+                <button class="btn" onclick="updateStatus('${statusKey}', 'In Progress')">
+                    Start Job
+                </button>
+
+                <button class="btn complete" onclick="updateStatus('${statusKey}', 'Completed')">
+                    Complete Job
+                </button>
+
+                <br><br>
+                <small>Created: ${r.date}</small>
+            </div>
+        `;
+    });
+}
+
+function updateStatus(id, newStatus) {
+    localStorage.setItem(id, newStatus);
+    document.getElementById(id).innerText = newStatus;
+}
+</script>
+
+</body>
+</html>
