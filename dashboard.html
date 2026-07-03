@@ -76,6 +76,10 @@ small {
     color: #60a5fa;
     font-weight: bold;
 }
+
+hr {
+    border: 1px solid #334155;
+}
 </style>
 </head>
 
@@ -85,6 +89,7 @@ small {
     <h2>SERVORA</h2>
     <a href="dashboard.html">Dashboard</a>
     <a href="request.html">New Request</a>
+    <a href="#workOrders">Work Orders</a>
     <a href="index.html">Home</a>
 </div>
 
@@ -106,10 +111,18 @@ small {
             <h3>AI Alerts</h3>
             <h1 id="alertCount">0</h1>
         </div>
+
+        <div class="card">
+            <h3>Work Orders</h3>
+            <h1 id="workOrderCount">0</h1>
+        </div>
     </div>
 
     <h2>Recent Requests</h2>
     <div id="recent"></div>
+
+    <h2 id="workOrders">Work Orders</h2>
+    <div id="workOrderList"></div>
 </div>
 
 <script>
@@ -120,12 +133,16 @@ document.getElementById("openCount").textContent = requests.length;
 document.getElementById("alertCount").textContent =
     requests.filter(r => r.priority === "High" || r.priority === "Emergency").length;
 
+document.getElementById("workOrderCount").textContent = requests.length;
+
 const recent = document.getElementById("recent");
+const workOrderList = document.getElementById("workOrderList");
 
 if (requests.length === 0) {
     recent.innerHTML = "<p>No requests submitted yet.</p>";
+    workOrderList.innerHTML = "<p>No work orders created yet.</p>";
 } else {
-    requests.slice().reverse().forEach(r => {
+    requests.slice().reverse().forEach((r, index) => {
         recent.innerHTML += `
             <div class="request-card">
                 <h3>${r.category} - ${r.priority}</h3>
@@ -143,6 +160,22 @@ if (requests.length === 0) {
                 <p><span class="label">Suggested Work Order:</span> ${r.suggestedWorkOrder}</p>
 
                 <small>Submitted: ${r.date}</small>
+            </div>
+        `;
+
+        workOrderList.innerHTML += `
+            <div class="request-card">
+                <h3>Work Order #${1001 + index}</h3>
+
+                <p><span class="label">Property:</span> ${r.property}</p>
+                <p><span class="label">Unit:</span> ${r.unit}</p>
+                <p><span class="label">Issue Type:</span> ${r.category}</p>
+                <p><span class="label">Priority:</span> ${r.priority}</p>
+                <p><span class="label">Assigned Technician:</span> ${r.technician}</p>
+                <p><span class="label">Status:</span> Pending</p>
+                <p><span class="label">Work Order:</span> ${r.suggestedWorkOrder}</p>
+
+                <small>Created: ${r.date}</small>
             </div>
         `;
     });
