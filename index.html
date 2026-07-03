@@ -6,19 +6,18 @@
         body {
             font-family: Arial;
             margin: 0;
-            padding: 0;
             background: #0f172a;
             color: white;
             text-align: center;
         }
 
         header {
-            padding: 60px;
+            padding: 70px 20px;
             background: #111827;
         }
 
         h1 {
-            font-size: 48px;
+            font-size: 52px;
             margin: 0;
         }
 
@@ -29,17 +28,55 @@
 
         .btn {
             margin-top: 20px;
-            padding: 12px 24px;
+            padding: 14px 28px;
             background: #3b82f6;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 17px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
         }
 
         .section {
-            padding: 60px;
+            padding: 60px 20px;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #1e293b;
+            width: 280px;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .card h3 {
+            color: #60a5fa;
+        }
+
+        .card p {
+            font-size: 16px;
+        }
+
+        .pricing {
+            background: #111827;
+        }
+
+        footer {
+            padding: 30px;
+            background: #020617;
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -47,29 +84,100 @@
 
 <header>
     <h1>SERVORA</h1>
-    <p>AI-Powered Maintenance Operations</p>
+    <p>AI-Powered Maintenance Operations for Property Managers</p>
     <button class="btn">Request Demo</button>
 </header>
 
 <div class="section">
     <h2>What is Servora?</h2>
-    <p>An AI platform that automates maintenance requests and work orders for property managers.</p>
+    <p>Servora helps property managers automate maintenance requests, work orders, technician assignments, and issue tracking using AI.</p>
 </div>
 
 <div class="section">
-    <h2>How it works</h2>
+    <h2>Core Features</h2>
+
+    <div class="cards">
+        <div class="card">
+            <h3>AI Request Sorting</h3>
+            <p>Automatically reads tenant maintenance requests and categorizes them by issue type, urgency, and location.</p>
+        </div>
+
+        <div class="card">
+            <h3>Automated Work Orders</h3>
+            <p>Creates work orders instantly so managers do not have to manually enter every maintenance issue.</p>
+        </div>
+
+        <div class="card">
+            <h3>Technician Assignment</h3>
+            <p>Assigns jobs to the right technician based on skill, availability, and priority.</p>
+        </div>
+
+        <div class="card">
+            <h3>Emergency Detection</h3>
+            <p>Flags urgent issues like leaks, electrical problems, HVAC failure, and safety risks.</p>
+        </div>
+
+        <div class="card">
+            <h3>Maintenance Dashboard</h3>
+            <p>Gives property managers one place to view open requests, completed jobs, pending work, and urgent alerts.</p>
+        </div>
+
+        <div class="card">
+            <h3>AI Recommendations</h3>
+            <p>Suggests next steps, repair priority, and possible causes of recurring maintenance problems.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>How It Works</h2>
     <p>
-        1. Tenant submits request<br>
-        2. AI categorizes issue<br>
-        3. Work order is created<br>
-        4. Technician is assigned
+        1. Tenant submits a maintenance request<br>
+        2. AI reads and categorizes the issue<br>
+        3. Servora creates a work order<br>
+        4. Technician gets assigned<br>
+        5. Manager tracks everything from the dashboard
     </p>
 </div>
 
 <div class="section">
     <h2>Built for Property Managers</h2>
-    <p>Reduce maintenance chaos. Automate everything.</p>
+    <p>Reduce maintenance chaos, save time, respond faster, and keep tenants happier.</p>
 </div>
+
+<div class="section pricing">
+    <h2>Simple Pricing</h2>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Starter</h3>
+            <p>$299/month</p>
+            <p>For small property managers handling basic maintenance requests.</p>
+        </div>
+
+        <div class="card">
+            <h3>Professional</h3>
+            <p>$799/month</p>
+            <p>For growing companies that need automation, dashboards, and AI assistance.</p>
+        </div>
+
+        <div class="card">
+            <h3>Enterprise</h3>
+            <p>Custom Pricing</p>
+            <p>For large property management companies with multiple locations and teams.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Ready to simplify maintenance?</h2>
+    <p>Start using AI to organize requests, create work orders, and manage your properties faster.</p>
+    <button class="btn">Get Started</button>
+</div>
+
+<footer>
+    © 2026 Servora. All rights reserved.
+</footer>
 
 </body>
 </html>
