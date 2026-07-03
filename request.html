@@ -1,36 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>New Maintenance Request - Servora</title>
-    <style>
-        body { font-family: Arial; margin: 0; background: #0f172a; color: white; }
-        .container { max-width: 700px; margin: 50px auto; background: #111827; padding: 40px; border-radius: 15px; }
-        h1 { color: #60a5fa; }
-        p { color: #cbd5e1; }
-        input, textarea { width: 100%; padding: 14px; margin: 12px 0; border: none; border-radius: 8px; font-size: 16px; }
-        textarea { height: 140px; }
-        .btn { padding: 15px 25px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 17px; cursor: pointer; }
-        .btn:hover { background: #2563eb; }
-        a { color: #60a5fa; text-decoration: none; }
-    </style>
+<meta charset="UTF-8">
+<title>New Maintenance Request - Servora</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #0f172a;
+    color: white;
+}
+
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: #111827;
+    padding: 40px;
+    border-radius: 15px;
+}
+
+h1 {
+    color: #60a5fa;
+}
+
+p {
+    color: #cbd5e1;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+textarea {
+    height: 140px;
+}
+
+.btn {
+    padding: 15px 25px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #2563eb;
+}
+
+a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
     <h1>New Maintenance Request</h1>
-    <p>Describe the issue. Servora AI will analyze it automatically.</p>
+    <p>Select a property, describe the issue, and Servora AI will analyze it automatically.</p>
 
-    <input id="property" type="text" placeholder="Property Name">
+    <select id="property">
+        <option value="">Select Property</option>
+    </select>
+
     <input id="unit" type="text" placeholder="Unit Number">
 
     <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
 
-    <button class="btn" onclick="submitRequest()">Submit Request</button>
+    <button class="btn" onclick="submitRequest()">
+        Submit Request
+    </button>
 
     <p><a href="dashboard.html">Back to Dashboard</a></p>
 </div>
 
 <script>
+let properties = JSON.parse(localStorage.getItem("properties")) || [];
+let propertyDropdown = document.getElementById("property");
+
+properties.forEach(function(property) {
+    let option = document.createElement("option");
+    option.value = property.name;
+    option.textContent = property.name;
+    propertyDropdown.appendChild(option);
+});
+
 function analyzeRequest(description) {
     let text = description.toLowerCase();
 
@@ -40,7 +105,13 @@ function analyzeRequest(description) {
     let responseTime = "24 hours";
     let suggestedWorkOrder = "Review the issue and assign the proper technician.";
 
-    if (text.includes("leak") || text.includes("water") || text.includes("pipe") || text.includes("sink") || text.includes("toilet")) {
+    if (
+        text.includes("leak") ||
+        text.includes("water") ||
+        text.includes("pipe") ||
+        text.includes("sink") ||
+        text.includes("toilet")
+    ) {
         category = "Plumbing";
         priority = "High";
         technician = "Plumber";
@@ -48,7 +119,13 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect plumbing lines, shut off water if needed, and repair leak source.";
     }
 
-    if (text.includes("ac") || text.includes("air conditioner") || text.includes("hvac") || text.includes("cooling") || text.includes("heat")) {
+    if (
+        text.includes("ac") ||
+        text.includes("air conditioner") ||
+        text.includes("hvac") ||
+        text.includes("cooling") ||
+        text.includes("heat")
+    ) {
         category = "HVAC";
         priority = "High";
         technician = "HVAC Technician";
@@ -56,7 +133,13 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect HVAC system, thermostat, compressor, and airflow.";
     }
 
-    if (text.includes("electric") || text.includes("outlet") || text.includes("power") || text.includes("sparking") || text.includes("breaker")) {
+    if (
+        text.includes("electric") ||
+        text.includes("outlet") ||
+        text.includes("power") ||
+        text.includes("sparking") ||
+        text.includes("breaker")
+    ) {
         category = "Electrical";
         priority = "Emergency";
         technician = "Electrician";
@@ -64,7 +147,13 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect electrical system immediately and secure the area.";
     }
 
-    if (text.includes("fridge") || text.includes("refrigerator") || text.includes("stove") || text.includes("oven") || text.includes("dishwasher")) {
+    if (
+        text.includes("fridge") ||
+        text.includes("refrigerator") ||
+        text.includes("stove") ||
+        text.includes("oven") ||
+        text.includes("dishwasher")
+    ) {
         category = "Appliance";
         priority = "Medium";
         technician = "Appliance Technician";
@@ -72,16 +161,40 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect appliance, diagnose failure, and repair or replace faulty parts.";
     }
 
-    return { category, priority, technician, responseTime, suggestedWorkOrder };
+    return {
+        category,
+        priority,
+        technician,
+        responseTime,
+        suggestedWorkOrder
+    };
 }
 
 function submitRequest() {
+    let selectedProperty = document.getElementById("property").value;
+    let unit = document.getElementById("unit").value;
     let description = document.getElementById("description").value;
+
+    if (selectedProperty === "") {
+        alert("Please select a property.");
+        return;
+    }
+
+    if (unit === "") {
+        alert("Please enter a unit number.");
+        return;
+    }
+
+    if (description === "") {
+        alert("Please describe the maintenance issue.");
+        return;
+    }
+
     let ai = analyzeRequest(description);
 
     let request = {
-        property: document.getElementById("property").value,
-        unit: document.getElementById("unit").value,
+        property: selectedProperty,
+        unit: unit,
         description: description,
         category: ai.category,
         priority: ai.priority,
@@ -92,10 +205,13 @@ function submitRequest() {
     };
 
     let requests = JSON.parse(localStorage.getItem("requests")) || [];
+
     requests.push(request);
+
     localStorage.setItem("requests", JSON.stringify(requests));
 
     alert("Request submitted! Servora AI analyzed the issue.");
+
     window.location.href = "dashboard.html";
 }
 </script>
