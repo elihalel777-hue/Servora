@@ -29,7 +29,8 @@ p {
 }
 
 select,
-textarea {
+textarea,
+input {
     width: 100%;
     padding: 14px;
     margin: 12px 0;
@@ -60,6 +61,11 @@ a {
     color: #60a5fa;
     text-decoration: none;
 }
+
+.photo-note {
+    color: #94a3b8;
+    font-size: 14px;
+}
 </style>
 </head>
 
@@ -67,7 +73,7 @@ a {
 
 <div class="container">
     <h1>New Maintenance Request</h1>
-    <p>Select the property, building, and unit. Servora AI will analyze the issue automatically.</p>
+    <p>Select the location, describe the issue, and upload a photo if available.</p>
 
     <select id="property" onchange="loadBuildings()">
         <option value="">Select Property</option>
@@ -82,6 +88,9 @@ a {
     </select>
 
     <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
+
+    <p class="photo-note">Upload Photo</p>
+    <input id="photo" type="file" accept="image/*">
 
     <button class="btn" onclick="submitRequest()">
         Submit Request
@@ -147,13 +156,7 @@ function analyzeRequest(description) {
     let responseTime = "24 hours";
     let suggestedWorkOrder = "Review the issue and assign the proper technician.";
 
-    if (
-        text.includes("leak") ||
-        text.includes("water") ||
-        text.includes("pipe") ||
-        text.includes("sink") ||
-        text.includes("toilet")
-    ) {
+    if (text.includes("leak") || text.includes("water") || text.includes("pipe") || text.includes("sink") || text.includes("toilet")) {
         category = "Plumbing";
         priority = "High";
         technician = "Plumber";
@@ -161,13 +164,7 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect plumbing lines, shut off water if needed, and repair leak source.";
     }
 
-    if (
-        text.includes("ac") ||
-        text.includes("air conditioner") ||
-        text.includes("hvac") ||
-        text.includes("cooling") ||
-        text.includes("heat")
-    ) {
+    if (text.includes("ac") || text.includes("air conditioner") || text.includes("hvac") || text.includes("cooling") || text.includes("heat")) {
         category = "HVAC";
         priority = "High";
         technician = "HVAC Technician";
@@ -175,14 +172,7 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect HVAC system, thermostat, compressor, and airflow.";
     }
 
-    if (
-        text.includes("electric") ||
-        text.includes("outlet") ||
-        text.includes("power") ||
-        text.includes("sparking") ||
-        text.includes("breaker") ||
-        text.includes("smoke")
-    ) {
+    if (text.includes("electric") || text.includes("outlet") || text.includes("power") || text.includes("sparking") || text.includes("breaker") || text.includes("smoke")) {
         category = "Electrical";
         priority = "Emergency";
         technician = "Electrician";
@@ -190,13 +180,7 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect electrical system immediately, secure the area, and shut off power if needed.";
     }
 
-    if (
-        text.includes("fridge") ||
-        text.includes("refrigerator") ||
-        text.includes("stove") ||
-        text.includes("oven") ||
-        text.includes("dishwasher")
-    ) {
+    if (text.includes("fridge") || text.includes("refrigerator") || text.includes("stove") || text.includes("oven") || text.includes("dishwasher")) {
         category = "Appliance";
         priority = "Medium";
         technician = "Appliance Technician";
@@ -204,13 +188,7 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect appliance, diagnose failure, and repair or replace faulty parts.";
     }
 
-    return {
-        category,
-        priority,
-        technician,
-        responseTime,
-        suggestedWorkOrder
-    };
+    return { category, priority, technician, responseTime, suggestedWorkOrder };
 }
 
 function submitRequest() {
@@ -218,6 +196,8 @@ function submitRequest() {
     let selectedBuilding = buildingDropdown.value;
     let selectedUnit = unitDropdown.value;
     let description = document.getElementById("description").value;
+    let photoInput = document.getElementById("photo");
+    let photoName = photoInput.files.length > 0 ? photoInput.files[0].name : "No photo uploaded";
 
     if (selectedProperty === "") {
         alert("Please select a property.");
@@ -246,6 +226,7 @@ function submitRequest() {
         building: selectedBuilding,
         unit: selectedUnit,
         description: description,
+        photoName: photoName,
         category: ai.category,
         priority: ai.priority,
         technician: ai.technician,
