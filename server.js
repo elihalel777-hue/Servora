@@ -1,35 +1,21 @@
-const express = require("express");
-const cors = require("cors");
+let buildings = [];
 
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(express.json());
-
-let properties = [];
-
-app.get("/", (req, res) => {
-    res.send("Servora backend is running.");
+app.get("/buildings", (req, res) => {
+    res.json(buildings);
 });
 
-app.get("/properties", (req, res) => {
-    res.json(properties);
-});
-
-app.post("/properties", (req, res) => {
-    const property = {
-        id: properties.length + 1,
-        name: req.body.name,
-        address: req.body.address,
-        units: req.body.units
+app.post("/buildings", (req, res) => {
+    const building = {
+        id: buildings.length + 1,
+        property: req.body.property,
+        name: req.body.name
     };
 
-    properties.push(property);
-
-    res.json(property);
+    buildings.push(building);
+    res.json(building);
 });
 
+// Leave this below it
 app.listen(PORT, () => {
     console.log(`Servora backend running on port ${PORT}`);
 });
