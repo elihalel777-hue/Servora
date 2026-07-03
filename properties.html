@@ -103,6 +103,8 @@ const API_URL = "http://localhost:3000";
 async function loadProperties() {
     const response = await fetch(API_URL + "/properties");
     const properties = await response.json();
+    await fetch(API_URL + "/properties", {
+    method: "POST",
 
     const propertyList = document.getElementById("propertyList");
     propertyList.innerHTML = "";
