@@ -6,37 +6,47 @@
 
 <style>
 body {
-    font-family: Arial;
     margin: 0;
+    font-family: Arial;
     background: #0f172a;
     color: white;
 }
 
-.container {
-    max-width: 750px;
-    margin: 50px auto;
-    background: #111827;
-    padding: 40px;
-    border-radius: 15px;
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    position: fixed;
+    padding: 25px;
 }
 
-h1 {
+.sidebar h2 {
     color: #60a5fa;
 }
 
-p {
+.sidebar a {
+    display: block;
     color: #cbd5e1;
+    text-decoration: none;
+    margin: 18px 0;
+}
+
+.main {
+    margin-left: 270px;
+    padding: 30px;
 }
 
 select,
 textarea,
 input {
     width: 100%;
+    max-width: 700px;
     padding: 14px;
     margin: 12px 0;
     border: none;
     border-radius: 8px;
     font-size: 16px;
+    display: block;
 }
 
 textarea {
@@ -44,107 +54,68 @@ textarea {
 }
 
 .btn {
-    padding: 15px 25px;
+    padding: 14px 22px;
     background: #3b82f6;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 17px;
     cursor: pointer;
 }
 
-.btn:hover {
-    background: #2563eb;
-}
-
-a {
+.label {
     color: #60a5fa;
-    text-decoration: none;
-}
-
-.photo-note {
-    color: #94a3b8;
-    font-size: 14px;
+    font-weight: bold;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>New Maintenance Request</h1>
-    <p>Select the location, describe the issue, and upload a photo if available.</p>
+<div class="sidebar">
+    <h2>SERVORA</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="properties.html">Properties</a>
+    <a href="buildings.html">Buildings</a>
+    <a href="units.html">Units</a>
+    <a href="request.html">New Request</a>
+    <a href="technician.html">Technician Portal</a>
+    <a href="index.html">Home</a>
+</div>
 
-    <select id="property" onchange="loadBuildings()">
+<div class="main">
+    <h1>New Maintenance Request</h1>
+    <p>Select a property, describe the issue, and Servora AI will analyze it.</p>
+
+    <select id="property">
         <option value="">Select Property</option>
     </select>
 
-    <select id="building" onchange="loadUnits()">
-        <option value="">Select Building</option>
-    </select>
-
-    <select id="unit">
-        <option value="">Select Unit</option>
-    </select>
+    <input id="unit" type="text" placeholder="Unit Number">
 
     <textarea id="description" placeholder="Example: Water is leaking under the kitchen sink..."></textarea>
 
-    <p class="photo-note">Upload Photo</p>
     <input id="photo" type="file" accept="image/*">
 
-    <button class="btn" onclick="submitRequest()">
-        Submit Request
-    </button>
-
-    <p><a href="dashboard.html">Back to Dashboard</a></p>
+    <button class="btn" onclick="submitRequest()">Submit Request</button>
 </div>
 
 <script>
-let properties = JSON.parse(localStorage.getItem("properties")) || [];
-let buildings = JSON.parse(localStorage.getItem("buildings")) || [];
-let units = JSON.parse(localStorage.getItem("units")) || [];
+const API_URL = "http://localhost:3000";
 
-let propertyDropdown = document.getElementById("property");
-let buildingDropdown = document.getElementById("building");
-let unitDropdown = document.getElementById("unit");
+async function loadProperties() {
+    const response = await fetch(API_URL + "/properties");
+    const properties = await response.json();
 
-properties.forEach(function(property) {
-    let option = document.createElement("option");
-    option.value = property.name;
-    option.textContent = property.name;
-    propertyDropdown.appendChild(option);
-});
+    const propertyDropdown = document.getElementById("property");
+    propertyDropdown.innerHTML = '<option value="">Select Property</option>';
 
-function loadBuildings() {
-    let selectedProperty = propertyDropdown.value;
-
-    buildingDropdown.innerHTML = '<option value="">Select Building</option>';
-    unitDropdown.innerHTML = '<option value="">Select Unit</option>';
-
-    buildings
-        .filter(building => building.property === selectedProperty)
-        .forEach(function(building) {
-            let option = document.createElement("option");
-            option.value = building.name;
-            option.textContent = building.name;
-            buildingDropdown.appendChild(option);
-        });
-}
-
-function loadUnits() {
-    let selectedProperty = propertyDropdown.value;
-    let selectedBuilding = buildingDropdown.value;
-
-    unitDropdown.innerHTML = '<option value="">Select Unit</option>';
-
-    units
-        .filter(unit => unit.property === selectedProperty && unit.building === selectedBuilding)
-        .forEach(function(unit) {
-            let option = document.createElement("option");
-            option.value = unit.unit;
-            option.textContent = unit.unit;
-            unitDropdown.appendChild(option);
-        });
+    properties.forEach(function(property) {
+        propertyDropdown.innerHTML += `
+            <option value="${property.name}">
+                ${property.name}
+            </option>
+        `;
+    });
 }
 
 function analyzeRequest(description) {
@@ -156,7 +127,13 @@ function analyzeRequest(description) {
     let responseTime = "24 hours";
     let suggestedWorkOrder = "Review the issue and assign the proper technician.";
 
-    if (text.includes("leak") || text.includes("water") || text.includes("pipe") || text.includes("sink") || text.includes("toilet")) {
+    if (
+        text.includes("leak") ||
+        text.includes("water") ||
+        text.includes("pipe") ||
+        text.includes("sink") ||
+        text.includes("toilet")
+    ) {
         category = "Plumbing";
         priority = "High";
         technician = "Plumber";
@@ -164,7 +141,13 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect plumbing lines, shut off water if needed, and repair leak source.";
     }
 
-    if (text.includes("ac") || text.includes("air conditioner") || text.includes("hvac") || text.includes("cooling") || text.includes("heat")) {
+    if (
+        text.includes("ac") ||
+        text.includes("air conditioner") ||
+        text.includes("hvac") ||
+        text.includes("cooling") ||
+        text.includes("heat")
+    ) {
         category = "HVAC";
         priority = "High";
         technician = "HVAC Technician";
@@ -172,7 +155,14 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect HVAC system, thermostat, compressor, and airflow.";
     }
 
-    if (text.includes("electric") || text.includes("outlet") || text.includes("power") || text.includes("sparking") || text.includes("breaker") || text.includes("smoke")) {
+    if (
+        text.includes("electric") ||
+        text.includes("outlet") ||
+        text.includes("power") ||
+        text.includes("sparking") ||
+        text.includes("breaker") ||
+        text.includes("smoke")
+    ) {
         category = "Electrical";
         priority = "Emergency";
         technician = "Electrician";
@@ -180,7 +170,13 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect electrical system immediately, secure the area, and shut off power if needed.";
     }
 
-    if (text.includes("fridge") || text.includes("refrigerator") || text.includes("stove") || text.includes("oven") || text.includes("dishwasher")) {
+    if (
+        text.includes("fridge") ||
+        text.includes("refrigerator") ||
+        text.includes("stove") ||
+        text.includes("oven") ||
+        text.includes("dishwasher")
+    ) {
         category = "Appliance";
         priority = "Medium";
         technician = "Appliance Technician";
@@ -188,29 +184,29 @@ function analyzeRequest(description) {
         suggestedWorkOrder = "Inspect appliance, diagnose failure, and repair or replace faulty parts.";
     }
 
-    return { category, priority, technician, responseTime, suggestedWorkOrder };
+    return {
+        category,
+        priority,
+        technician,
+        responseTime,
+        suggestedWorkOrder
+    };
 }
 
-function submitRequest() {
-    let selectedProperty = propertyDropdown.value;
-    let selectedBuilding = buildingDropdown.value;
-    let selectedUnit = unitDropdown.value;
-    let description = document.getElementById("description").value;
-    let photoInput = document.getElementById("photo");
-    let photoName = photoInput.files.length > 0 ? photoInput.files[0].name : "No photo uploaded";
+async function submitRequest() {
+    const property = document.getElementById("property").value;
+    const unit = document.getElementById("unit").value;
+    const description = document.getElementById("description").value;
+    const photoInput = document.getElementById("photo");
+    const photoName = photoInput.files.length > 0 ? photoInput.files[0].name : "No photo uploaded";
 
-    if (selectedProperty === "") {
+    if (property === "") {
         alert("Please select a property.");
         return;
     }
 
-    if (selectedBuilding === "") {
-        alert("Please select a building.");
-        return;
-    }
-
-    if (selectedUnit === "") {
-        alert("Please select a unit.");
+    if (unit === "") {
+        alert("Please enter a unit number.");
         return;
     }
 
@@ -219,12 +215,11 @@ function submitRequest() {
         return;
     }
 
-    let ai = analyzeRequest(description);
+    const ai = analyzeRequest(description);
 
-    let request = {
-        property: selectedProperty,
-        building: selectedBuilding,
-        unit: selectedUnit,
+    const request = {
+        property: property,
+        unit: unit,
         description: description,
         photoName: photoName,
         category: ai.category,
@@ -235,13 +230,19 @@ function submitRequest() {
         date: new Date().toLocaleString()
     };
 
-    let requests = JSON.parse(localStorage.getItem("requests")) || [];
-    requests.push(request);
-    localStorage.setItem("requests", JSON.stringify(requests));
+    await fetch(API_URL + "/requests", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(request)
+    });
 
     alert("Request submitted! Servora AI analyzed the issue.");
     window.location.href = "dashboard.html";
 }
+
+loadProperties();
 </script>
 
 </body>
