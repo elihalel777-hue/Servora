@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Maintenance Request - Servora</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            background: #111827;
+            padding: 40px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #60a5fa;
+        }
+
+        p {
+            color: #cbd5e1;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 120px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>New Maintenance Request</h1>
+    <p>Submit a maintenance issue for AI review and work order creation.</p>
+
+    <input type="text" placeholder="Property Name">
+    <input type="text" placeholder="Unit Number">
+
+    <select>
+        <option>Select Issue Category</option>
+        <option>Plumbing</option>
+        <option>Electrical</option>
+        <option>HVAC</option>
+        <option>Appliance</option>
+        <option>General Maintenance</option>
+        <option>Emergency</option>
+    </select>
+
+    <select>
+        <option>Select Priority</option>
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Emergency</option>
+    </select>
+
+    <textarea placeholder="Describe the maintenance issue..."></textarea>
+
+    <input type="file">
+
+    <button class="btn" onclick="alert('Request submitted! AI will review this issue.'); window.location.href='dashboard.html';">
+        Submit Request
+    </button>
+
+    <p><a href="dashboard.html">Back to Dashboard</a></p>
+</div>
+
+</body>
+</html>
